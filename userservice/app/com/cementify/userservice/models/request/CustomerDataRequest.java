@@ -5,8 +5,27 @@ import java.util.Date;
 /**
  * Created by roshan on 29/02/16.
  */
-public class CustomerDataUpdateRequest extends CustomerRequest {
+public class CustomerDataRequest extends CustomerRequest {
+
     private Date birthDay;
+
+    private String firstName;
+
+    private String lastName;
+
+    private Boolean isMale;
+
+    private String notificationId;
+
+    private String deviceId;
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
     public Date getBirthDay() {
         return birthDay;
@@ -32,11 +51,13 @@ public class CustomerDataUpdateRequest extends CustomerRequest {
         this.lastName = lastName;
     }
 
-    private String firstName;
+    public String getNotificationId() {
+        return notificationId;
+    }
 
-    private String lastName;
-
-    private Boolean isMale;
+    public void setNotificationId(String notificationId) {
+        this.notificationId = notificationId;
+    }
 
     public Boolean getIsCodBlocked() {
         return isCodBlocked;

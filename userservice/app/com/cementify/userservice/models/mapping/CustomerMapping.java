@@ -1,9 +1,10 @@
 package com.cementify.userservice.models.mapping;
 
 import com.cementify.userservice.models.Customer;
-import com.cementify.userservice.models.CustomerDevices;
+import com.cementify.userservice.models.CustomerDevice;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.response.CustomerResponse;
+import com.cementify.userservice.models.response.CustomerResponseWithSocialAccount;
 
 /**
  * Created by roshan on 31/01/16.
@@ -20,49 +21,51 @@ public class CustomerMapping {
 
     public static CustomerResponse getCustomerResponse(Customer customer,CustomerResponse customerResponse)
     {
-
         customerResponse.setCustomerId(customer.getCustomerId());
         customerResponse.setEmail(customer.getEmail());
-        customerResponse.setFbEmail(customer.getFbEmail());
-        customerResponse.setFbId(customer.getFbId());
-        customerResponse.setGoogleEmail(customer.getGoogleEmail());
-        customerResponse.setGoogleId(customer.getGoogleId());
         customerResponse.setIsVerified(customer.getIsVerified());
         customerResponse.setMobile(customer.getMobile());
         return customerResponse;
-        //customerResponse.setRuid(customer.getRuid());
     }
 
 
-    public static CustomerResponse getCustomerResponseFromCustomerDevice(CustomerDevices customerDevices){
+    public static CustomerResponse getCustomerResponseFromCustomerDevice(CustomerDevice customerDevice){
         CustomerResponse customerResponse = new CustomerResponse();
-
-        return getCustomerResponseFromCustomerDevice(customerDevices, customerResponse);
+        return getCustomerResponseFromCustomerDevice(customerDevice, customerResponse);
     }
 
-    private static CustomerResponse getCustomerResponseFromCustomerDevice(CustomerDevices customerDevices,CustomerResponse customerResponse){
-        Customer customer =customerDevices.getCustomer();
+    public static CustomerResponse getCustomerResponseWithSocialAccount(Customer customer)
+    {
+        CustomerResponseWithSocialAccount customerResponse = new CustomerResponseWithSocialAccount();
+        return getCustomerResponseWithSocialAccount(customer, customerResponse);
+
+    }
+
+    public static CustomerResponse getCustomerResponseWithSocialAccount(Customer customer,CustomerResponseWithSocialAccount customerResponse)
+    {
         customerResponse.setCustomerId(customer.getCustomerId());
         customerResponse.setEmail(customer.getEmail());
+        customerResponse.setIsVerified(customer.getIsVerified());
+        customerResponse.setMobile(customer.getMobile());
         customerResponse.setFbEmail(customer.getFbEmail());
         customerResponse.setFbId(customer.getFbId());
         customerResponse.setGoogleEmail(customer.getGoogleEmail());
         customerResponse.setGoogleId(customer.getGoogleId());
+        return customerResponse;
+
+    }
+
+
+    private static CustomerResponse getCustomerResponseFromCustomerDevice(CustomerDevice customerDevice,CustomerResponse customerResponse){
+        Customer customer = customerDevice.getCustomer();
+        customerResponse.setCustomerId(customer.getCustomerId());
+        customerResponse.setEmail(customer.getEmail());
         customerResponse.setIsVerified(customer.getIsVerified());
         customerResponse.setMobile(customer.getMobile());
-        customerResponse.setRuid(customerDevices.getRuid());
+        customerResponse.setRuid(customerDevice.getRuid());
         return customerResponse;
     }
-  /*  public CustomerSearchResponse getSearchResponse(Customer customer)
-    {
-        CustomerSearchResponse customerSearchResponse = new CustomerSearchResponse();
 
-        getCustomerResponse(customer, CustomerSearchResponse);
-        customerSearchResponse.setCreatedDate(customer.getCreatedDate());
-
-        return customerSearchResponse;
-    }
-*/
   public static Customer getCustomerFromRequest(CustomerRequest customerRequest)
   {
       Customer customer = new Customer();
@@ -80,7 +83,6 @@ public class CustomerMapping {
         customer.setGoogleId(customerRequest.getGoogleId());
         customer.setIsVerified(customerRequest.getIsVerified());
         customer.setMobile(customerRequest.getMobile());
-        //customer.setRuid(customerRequest.getRuid());
         customer.setPassword(customerRequest.getPassword());
         return customer;
     }

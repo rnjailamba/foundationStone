@@ -14,3 +14,6 @@ POST          /userService/updatePassword                         com.cementify.
 POST          /userService/updateFbId                             com.cementify.userservice.controllers.CustomerController.updateFbId()
 POST          /userService/updateGoogleId                         com.cementify.userservice.controllers.CustomerController.updateGoogleId()
 POST          /userService/setVerified                            com.cementify.userservice.controllers.CustomerController.setVerified()
+POST          /userService/logout                                 com.cementify.userservice.controllers.CustomerController.logout()
+GET           /userService/findCustomerByRuid/:ruid               com.cementify.userservice.controllers.CustomerController.findCustomerByRuid(ruid: String)
+POST           /userService/updateCustomerData                    com.cementify.userservice.controllers.CustomerController.updateCustomerData()

@@ -1,8 +1,8 @@
 package com.cementify.userservice.services;
 
 import com.cementify.userservice.models.Customer;
-import com.cementify.userservice.models.CustomerDevices;
-import com.cementify.userservice.models.request.CustomerDataUpdateRequest;
+import com.cementify.userservice.models.CustomerDevice;
+import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import com.google.inject.ImplementedBy;
@@ -13,11 +13,11 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(CustomerServiceImp.class)
 public interface CustomerService {
 
-    CustomerDevices create(CustomerRequest customerRequest);
-    CustomerDevices createRuid(CustomerRequest customerRequest);
-    CustomerDevices createAccount(CustomerRequest customerRequest);
+    CustomerDevice create(CustomerDataRequest customerRequest);
+    CustomerDevice createRuid(CustomerDataRequest customerRequest);
+    CustomerDevice createAccount(CustomerDataRequest customerRequest);
     Customer findByMobile(String mobile);
-    Customer update(CustomerDataUpdateRequest customerDataUpdateRequest);
+    Customer update(CustomerDataRequest customerDataRequest);
     boolean updatePassword(CustomerResetPasswordRequest customerResetPasswordRequest);
     void updateFbId(CustomerRequest customerRequest);
     void updateGoogId(CustomerRequest customerRequest);
@@ -26,5 +26,6 @@ public interface CustomerService {
     Customer findByEmail(String email);
     Customer findCustomerByCustomerId(int customerId);
     Customer createCustomer(CustomerRequest customerRequest);
-
+    void removeRuid(CustomerRequest customerRequest);
+    CustomerDevice findByRuid(String ruid);
 }

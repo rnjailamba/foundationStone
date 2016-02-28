@@ -39,11 +39,9 @@ public class CustomerRequest {
    @Constraints.MaxLength(50)
     private String password;
 
-    private String deviceId;
 
     private String osType;
 
-    private String notificationId;
 
 
     public String getRuid() {
@@ -55,13 +53,6 @@ public class CustomerRequest {
     }
 
 
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
 
     public String getOsType() {
         return osType;
@@ -71,13 +62,6 @@ public class CustomerRequest {
         this.osType = osType;
     }
 
-    public String getNotificationId() {
-        return notificationId;
-    }
-
-    public void setNotificationId(String notificationId) {
-        this.notificationId = notificationId;
-    }
 
     public String getMobile() {
         return mobile;

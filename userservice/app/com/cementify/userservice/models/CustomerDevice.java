@@ -11,14 +11,14 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "customer_device_table")
-public class CustomerDevices {
+public class CustomerDevice {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = "id")
     private Integer id;
 
     @Valid
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     private Customer customer;
 
