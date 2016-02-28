@@ -2,6 +2,7 @@ package com.cementify.userservice.services;
 
 import com.cementify.userservice.models.Customer;
 import com.cementify.userservice.models.CustomerDevices;
+import com.cementify.userservice.models.request.CustomerDataUpdateRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import com.google.inject.ImplementedBy;
@@ -16,11 +17,11 @@ public interface CustomerService {
     CustomerDevices createRuid(CustomerRequest customerRequest);
     CustomerDevices createAccount(CustomerRequest customerRequest);
     Customer findByMobile(String mobile);
-    Customer update(Integer customerId,Customer customer);
+    Customer update(CustomerDataUpdateRequest customerDataUpdateRequest);
     boolean updatePassword(CustomerResetPasswordRequest customerResetPasswordRequest);
-    boolean updateFbId(String mobile, String fbId, String fbEmail);
-    boolean updateGoogId(String mobile,String email, String googId);
-    boolean setVerified(String mobile);
+    void updateFbId(CustomerRequest customerRequest);
+    void updateGoogId(CustomerRequest customerRequest);
+    void setVerified(CustomerRequest customerRequest);
     Customer findByFbId(String fbId);
     Customer findByEmail(String email);
     Customer findCustomerByCustomerId(int customerId);

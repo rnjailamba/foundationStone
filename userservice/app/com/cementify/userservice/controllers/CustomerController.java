@@ -3,9 +3,11 @@ package com.cementify.userservice.controllers;
 import com.cementify.userservice.exceptions.EntityConflictException;
 import com.cementify.userservice.exceptions.EntityNotFoundException;
 import com.cementify.userservice.exceptions.InvalidRequestException;
+import com.cementify.userservice.exceptions.NotAuthenticatedException;
 import com.cementify.userservice.models.Customer;
 import com.cementify.userservice.models.CustomerDevices;
 import com.cementify.userservice.models.mapping.CustomerMapping;
+import com.cementify.userservice.models.request.CustomerDataUpdateRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import com.cementify.userservice.models.response.CustomerResponse;
@@ -136,11 +138,95 @@ public class CustomerController extends Controller {
 					.getCustomerResponseFromCustomerDevice(customerDevices);
 			return ok(Json.toJson(customerResponse));
 		} catch (InvalidRequestException e) {
-			return status(400, "Bad request");
+			return status(400, "Bad Request");
+		} catch (EntityNotFoundException e) {
+			return status(404, e.getMessage());
+		}catch (NotAuthenticatedException e){
+			return status(401, "Not Verified");
+		}
+
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result updateFbId() {
+		Form<CustomerRequest> customerRequestForm = formFactory.form(CustomerRequest.class);
+		customerRequestForm=customerRequestForm.bindFromRequest();
+		if (customerRequestForm.hasErrors()) {
+			return status(400, "Bad Request");
+		}
+		CustomerRequest customerRequest=customerRequestForm.get();
+		try {
+			customerService.updateFbId(customerRequest);
+			return status(200, "FbId Successfully Updated");
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad Request");
 		} catch (EntityNotFoundException e) {
 			return status(404, e.getMessage());
 		}
 	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result updateGoogleId() {
+		Form<CustomerRequest> customerRequestForm = formFactory.form(CustomerRequest.class);
+		customerRequestForm=customerRequestForm.bindFromRequest();
+		if (customerRequestForm.hasErrors()) {
+			return status(400, "Bad Request");
+		}
+		CustomerRequest customerRequest=customerRequestForm.get();
+		try {
+			customerService.updateGoogId(customerRequest);
+			return status(200, "GoogleId Successfully Updated");
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad Request");
+		} catch (EntityNotFoundException e) {
+			return status(404, e.getMessage());
+		}
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result setVerified() {
+		Form<CustomerRequest> customerRequestForm = formFactory.form(CustomerRequest.class);
+		customerRequestForm=customerRequestForm.bindFromRequest();
+		if (customerRequestForm.hasErrors()) {
+			return status(400, "Bad Request");
+		}
+		CustomerRequest customerRequest=customerRequestForm.get();
+		try{
+			customerService.setVerified(customerRequest);
+			return status(200, "Customer Verified");
+		}catch (InvalidRequestException e) {
+			return status(400, "Bad Request");
+		} catch (EntityNotFoundException e) {
+			return status(404, e.getMessage());
+		}
+
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result updateCustomerData() {
+		Form<CustomerDataUpdateRequest> customerDataUpdateRequestForm = formFactory.form(CustomerDataUpdateRequest.class);
+		customerDataUpdateRequestForm=customerDataUpdateRequestForm.bindFromRequest();
+		if (customerDataUpdateRequestForm.hasErrors()) {
+			return status(400, "Bad Request");
+		}
+		CustomerDataUpdateRequest customerDataUpdateRequest=customerDataUpdateRequestForm.get();
+		try {
+			Customer customer=customerService.update(customerDataUpdateRequest);
+			CustomerResponse customerResponse = CustomerMapping
+					.getCustomerResponse(customer);
+			return ok(Json.toJson(customerResponse));
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad Request");
+		} catch (EntityNotFoundException e) {
+			return status(404, e.getMessage());
+		}
+	}
+
+
     /*
     package com.limeroad.services.user.controller;
 

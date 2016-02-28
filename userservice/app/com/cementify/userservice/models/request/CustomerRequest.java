@@ -4,6 +4,8 @@ import com.cementify.userservice.validations.Create;
 import com.cementify.userservice.validations.Update;
 import play.data.validation.Constraints;
 
+import java.util.Date;
+
 
 /**
  * Created by roshan on 31/01/16.
@@ -42,6 +44,7 @@ public class CustomerRequest {
     private String osType;
 
     private String notificationId;
+
 
     public String getRuid() {
         return ruid;

@@ -3,9 +3,11 @@ package com.cementify.userservice.services;
 import com.cementify.userservice.exceptions.EntityConflictException;
 import com.cementify.userservice.exceptions.EntityNotFoundException;
 import com.cementify.userservice.exceptions.InvalidStateException;
+import com.cementify.userservice.exceptions.NotAuthenticatedException;
 import com.cementify.userservice.models.Customer;
 import com.cementify.userservice.models.CustomerDevices;
 import com.cementify.userservice.models.mapping.CustomerMapping;
+import com.cementify.userservice.models.request.CustomerDataUpdateRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import play.db.jpa.JPA;
@@ -62,32 +64,42 @@ public class CustomerServiceImp  implements CustomerService{
             throw new EntityNotFoundException("Customer with "
                     + customer.getMobile() + " not found.");
         }
-        UUID ruid=UUID.randomUUID();
-        CustomerDevices customerDevices=new CustomerDevices();
-        customerDevices.setCustomer(customer);
-        customerDevices.setDeviceId(customerRequest.getDeviceId());
-        customerDevices.setOsType(customerRequest.getOsType());
-        customerDevices.setNotificationId(customerRequest.getNotificationId());
-        customerDevices.setRuid(ruid.toString());
-        JPA.em().persist(customerDevices);
-        return customerDevices;
+        if(customer.hasPassword(customerRequest.getPassword())){
+            UUID ruid=UUID.randomUUID();
+            CustomerDevices customerDevices=new CustomerDevices();
+            customerDevices.setCustomer(customer);
+            customerDevices.setDeviceId(customerRequest.getDeviceId());
+            customerDevices.setOsType(customerRequest.getOsType());
+            customerDevices.setNotificationId(customerRequest.getNotificationId());
+            customerDevices.setRuid(ruid.toString());
+            JPA.em().persist(customerDevices);
+            return customerDevices;
+        }else{
+            throw new NotAuthenticatedException("Customer with "
+                    + customer.getMobile() + " not autheticated.");
+        }
+
     }
 
     @Override
-    public Customer update(Integer customerId,Customer customer) {
-        Customer toUpdate = findCustomerByCustomerId(customerId);
+    public Customer update(CustomerDataUpdateRequest customerRequest) {
+        Customer toUpdate = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (toUpdate == null) {
             throw new EntityNotFoundException("Customer with id "
-                    + customer.getCustomerId() + " not found.");
+                    + customerRequest.getCustomerId() + " not found.");
         }
-
-        customer.setCustomerId(customerId);
-       // validateVendor(vendor, Update.class);
-
-        toUpdate.setEmail(customer.getEmail());
-        toUpdate.setFbEmail(customer.getFbEmail());
-        toUpdate.setFbId(customer.getFbId());
-
+        toUpdate.setEmail(customerRequest.getEmail());
+        toUpdate.setFbEmail(customerRequest.getFbEmail());
+        toUpdate.setFbId(customerRequest.getFbId());
+        toUpdate.setBirthday(customerRequest.getBirthDay());
+        toUpdate.setGoogleEmail(customerRequest.getGoogleEmail());
+        toUpdate.setGoogleId(customerRequest.getGoogleId());
+        toUpdate.setFirstName(customerRequest.getFirstName());
+        toUpdate.setLastName(customerRequest.getLastName());
+        toUpdate.setIsMale(customerRequest.getIsMale());
+        toUpdate.setIsVerified(customerRequest.getIsVerified());
+        toUpdate.setIsCodBlocked(customerRequest.getIsCodBlocked());
+        toUpdate.setIsPrepaidBlocked(customerRequest.getIsPrepaidBlocked());
         JPA.em().persist(toUpdate);
         return toUpdate;
     }
@@ -111,32 +123,38 @@ public class CustomerServiceImp  implements CustomerService{
 
 
     @Override
-    public boolean updateFbId(String mobile, String fbId, String fbEmail) {
-        Customer customer = findByMobile(mobile);
-        customer.setFbId(fbId);
-        customer.setFbEmail(fbEmail);
+    public void updateFbId(CustomerRequest customerRequest) {
+        Customer customer = findByMobile(customerRequest.getMobile());
+        if (customer == null) {
+            throw new EntityNotFoundException("Customer with "
+                    + customer.getMobile() + " not found.");
+        }
+        customer.setFbId(customerRequest.getFbId());
+        customer.setFbEmail(customerRequest.getFbEmail());
         JPA.em().persist(customer);
-        return true;
     }
 
     @Override
-    public boolean updateGoogId(String mobile,String email, String googId) {
-        Customer customer = findByMobile(mobile);
-        customer.setGoogleEmail(email);
-        customer.setGoogleId(googId);
+    public void updateGoogId(CustomerRequest customerRequest) {
+        Customer customer = findByMobile(customerRequest.getMobile());
+        if (customer == null) {
+            throw new EntityNotFoundException("Customer with "
+                    + customer.getMobile() + " not found.");
+        }
+        customer.setGoogleEmail(customerRequest.getGoogleEmail());
+        customer.setGoogleId(customerRequest.getGoogleId());
         JPA.em().persist(customer);
-        return true;
     }
 
     @Override
-    public boolean setVerified(String mobile) {
-        Customer customer = findByMobile(mobile);
-        boolean wasVerified = customer.getIsVerified();
-        if(wasVerified)
-            return  wasVerified;
-        customer.setIsVerified(true);
+    public void setVerified(CustomerRequest customerRequest) {
+        Customer customer = findByMobile(customerRequest.getMobile());
+        if (customer == null) {
+            throw new EntityNotFoundException("Customer with "
+                    + customer.getMobile() + " not found.");
+        }
+        customer.setIsVerified(customerRequest.getIsVerified());
         JPA.em().persist(customer);
-        return wasVerified;
 
     }
 

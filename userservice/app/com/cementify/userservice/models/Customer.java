@@ -5,22 +5,18 @@ package com.cementify.userservice.models;
  */
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import javax.xml.bind.DatatypeConverter;
 import java.util.Date;
 
-import com.cementify.userservice.validations.Create;
-import com.cementify.userservice.validations.Update;
 import org.apache.commons.lang3.StringUtils;
 import play.data.validation.Constraints;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.List;
+
 
 @Entity
 @Table(name = "customer_table")
@@ -294,13 +290,11 @@ public class Customer {
     }
 
     private static byte[] base64ToByte(String data) throws IOException {
-        BASE64Decoder decoder = new BASE64Decoder();
-        return decoder.decodeBuffer(data);
+        return DatatypeConverter.parseBase64Binary(data);
     }
 
     private static String byteToBase64(byte[] data) {
-        BASE64Encoder endecoder = new BASE64Encoder();
-        return endecoder.encode(data);
+        return DatatypeConverter.printBase64Binary(data);
     }
 
     public boolean isFacebookUser() {

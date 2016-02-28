@@ -3,7 +3,14 @@
 # ~~~~
 
 # Home page
-GET           /userService/ping                                  com.cementify.userservice.controllers.CustomerController.ping()
-POST          /userService/create                                com.cementify.userservice.controllers.CustomerController.create()
-GET           /userService/findByMobile/:mobile                  com.cementify.userservice.controllers.CustomerController.findByMobile(mobile: String)
-POST          /userService/login                                com.cementify.userservice.controllers.CustomerController.login()
+GET           /userService/ping                                   com.cementify.userservice.controllers.CustomerController.ping()
+POST          /userService/create                                 com.cementify.userservice.controllers.CustomerController.create()
+GET           /userService/findByMobile/:mobile                   com.cementify.userservice.controllers.CustomerController.findByMobile(mobile: String)
+POST          /userService/login                                  com.cementify.userservice.controllers.CustomerController.login()
+GET           /userService/findCustomerById/:customerId           com.cementify.userservice.controllers.CustomerController.findCustomerByCustomerId(customerId: Integer)
+GET           /userService/findCustomerByEmail/:email             com.cementify.userservice.controllers.CustomerController.findCustomerByEmail(email: String)
+GET           /userService/findCustomerByFbId/:fbId               com.cementify.userservice.controllers.CustomerController.findCustomerByFbId(fbId: String)
+POST          /userService/updatePassword                         com.cementify.userservice.controllers.CustomerController.updatePassword()
+POST          /userService/updateFbId                             com.cementify.userservice.controllers.CustomerController.updateFbId()
+POST          /userService/updateGoogleId                         com.cementify.userservice.controllers.CustomerController.updateGoogleId()
+POST          /userService/setVerified                            com.cementify.userservice.controllers.CustomerController.setVerified()

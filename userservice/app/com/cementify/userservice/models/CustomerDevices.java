@@ -99,9 +99,5 @@ public class CustomerDevices {
     }
 
 
-    public String validate() {
-
-        return null;
-    }
 
 }
