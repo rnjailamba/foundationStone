@@ -1,0 +1,9 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET           /userService/ping                                  com.cementify.userservice.controllers.CustomerController.ping()
+POST          /userService/create                                com.cementify.userservice.controllers.CustomerController.create()
+GET           /userService/findByMobile/:mobile                  com.cementify.userservice.controllers.CustomerController.findByMobile(mobile: String)
+POST          /userService/login                                com.cementify.userservice.controllers.CustomerController.login()
