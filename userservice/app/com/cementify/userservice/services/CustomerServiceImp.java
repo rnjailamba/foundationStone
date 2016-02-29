@@ -4,8 +4,7 @@ import com.cementify.userservice.exceptions.EntityConflictException;
 import com.cementify.userservice.exceptions.EntityNotFoundException;
 import com.cementify.userservice.exceptions.InvalidStateException;
 import com.cementify.userservice.exceptions.NotAuthenticatedException;
-import com.cementify.userservice.models.Customer;
-import com.cementify.userservice.models.CustomerDevice;
+import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.mapping.CustomerMapping;
 import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
@@ -14,6 +13,7 @@ import play.db.jpa.JPA;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -241,5 +241,110 @@ public class CustomerServiceImp implements CustomerService {
             throw new NotAuthenticatedException("CustomerId conflict Exception");
         }
     }
+
+    @Override
+    public List<CustomerAddress> findAddressesByCustomerId(Integer customerId){
+        Query query = JPA.em()
+                .createQuery("select c from CustomerAddress c where c.customerId= :customerId");
+        query.setParameter("customerId", customerId);
+        List resultList = query.getResultList();
+
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer Address with "
+                    + customerId + " not found.");
+        }
+        List<CustomerAddress> customerAddresses=new ArrayList<>();
+        int i=0;
+        while(i<resultList.size()) {
+            CustomerAddress customerAddress = (CustomerAddress) resultList.get(i);
+            customerAddresses.add(customerAddress);
+            i++;
+        }
+       return customerAddresses;
+    }
+
+    @Override
+    public List<CustomerLocation> findLocationsByCustomerId(Integer customerId){
+        Query query = JPA.em()
+                .createQuery("select c from CustomerLocation c where c.customerId= :customerId");
+        query.setParameter("customerId", customerId);
+        List resultList = query.getResultList();
+
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer Location with "
+                    + customerId + " not found.");
+        }
+        List<CustomerLocation> customerLocations=new ArrayList<>();
+        int i=0;
+        while(i<resultList.size()) {
+            CustomerLocation customerLocation = (CustomerLocation) resultList.get(i);
+            customerLocations.add(customerLocation);
+            i++;
+        }
+        return customerLocations;
+    }
+
+    @Override
+    public List<CustomerContact> findContactsByCustomerId(Integer customerId){
+        Query query = JPA.em()
+                .createQuery("select c from CustomerContact c where c.customerId= :customerId");
+        query.setParameter("customerId", customerId);
+        List resultList = query.getResultList();
+
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer contacts with "
+                    + customerId + " not found.");
+        }
+        List<CustomerContact> customerContactList=new ArrayList<>();
+        int i=0;
+        while(i<resultList.size()) {
+            CustomerContact customerContact = (CustomerContact) resultList.get(i);
+            customerContactList.add(customerContact);
+            i++;
+        }
+        return customerContactList;
+    }
+
+    @Override
+    public List<CustomerEmail> findEmailsByCustomerId(Integer customerId){
+        Query query = JPA.em()
+                .createQuery("select c from CustomerEmail c where c.customerId= :customerId");
+        query.setParameter("customerId", customerId);
+        List resultList = query.getResultList();
+
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer emails with "
+                    + customerId + " not found.");
+        }
+        List<CustomerEmail> customerEmailList=new ArrayList<>();
+        int i=0;
+        while(i<resultList.size()) {
+            CustomerEmail customerEmail = (CustomerEmail) resultList.get(i);
+            customerEmailList.add(customerEmail);
+            i++;
+        }
+        return customerEmailList;
+    }
+
+    @Override
+    public void addEmail(CustomerEmail customerEmail) {
+        JPA.em().persist(customerEmail);
+    }
+
+    @Override
+    public void addAddress(CustomerAddress customerAddress) {
+        JPA.em().persist(customerAddress);
+    }
+
+    @Override
+    public void addContact(CustomerContact customerContact) {
+        JPA.em().persist(customerContact);
+    }
+
+    @Override
+    public void addLocation(CustomerLocation customerLocation) {
+        JPA.em().persist(customerLocation);
+    }
+
 
 }

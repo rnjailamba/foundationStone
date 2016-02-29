@@ -1,10 +1,7 @@
 package com.cementify.userservice.models.request;
 
-import com.cementify.userservice.validations.Create;
-import com.cementify.userservice.validations.Update;
-import play.data.validation.Constraints;
 
-import java.util.Date;
+import play.data.validation.Constraints;
 
 
 /**

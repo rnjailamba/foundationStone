@@ -1,11 +1,12 @@
 package com.cementify.userservice.services;
 
-import com.cementify.userservice.models.Customer;
-import com.cementify.userservice.models.CustomerDevice;
+import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import com.google.inject.ImplementedBy;
+
+import java.util.List;
 
 /**
  * Created by roshan on 30/01/16.
@@ -28,4 +29,12 @@ public interface CustomerService {
     Customer createCustomer(CustomerRequest customerRequest);
     void removeRuid(CustomerRequest customerRequest);
     CustomerDevice findByRuid(String ruid);
+    List<CustomerAddress> findAddressesByCustomerId(Integer customerId);
+    List<CustomerLocation> findLocationsByCustomerId(Integer customerId);
+    List<CustomerContact> findContactsByCustomerId(Integer customerId);
+    List<CustomerEmail> findEmailsByCustomerId(Integer customerId);
+    void addEmail(CustomerEmail customerEmail);
+    void addAddress(CustomerAddress customerAddress);
+    void addLocation(CustomerLocation customerLocation);
+    void addContact(CustomerContact customerContact);
 }
