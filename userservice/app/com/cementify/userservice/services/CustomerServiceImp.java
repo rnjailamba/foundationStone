@@ -235,7 +235,7 @@ public class CustomerServiceImp implements CustomerService {
     @Override
     public void removeRuid(CustomerRequest customerRequest) {
         CustomerDevice customerDevice=findByRuid(customerRequest.getRuid());
-        if(customerRequest.getCustomerId()==customerDevice.getCustomer().getCustomerId()){
+        if(customerRequest.getCustomerId().equals(customerDevice.getCustomer().getCustomerId())){
            JPA.em().remove(customerDevice);
         }else {
             throw new NotAuthenticatedException("CustomerId conflict Exception");
