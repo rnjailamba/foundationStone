@@ -24,20 +24,20 @@ public class CustomerServiceImp implements CustomerService {
 
 
     @Override
-    public CustomerDevice create(CustomerDataRequest customerRequest) {
-
-        CustomerDevice customerDevice = createAccount(customerRequest);
-        sendWelcomeMail(customerRequest);
-        return customerDevice;
+    public CustomerDevice resetPassword(CustomerDataRequest customerRequest) {
+        return createAccount(customerRequest);
     }
 
     @Override
-    public Customer createCustomer(CustomerRequest customerRequest) throws EntityConflictException {
-        Customer customer = CustomerMapping.getCustomerFromRequest(customerRequest);
-        try {
+    public Customer createCustomer(CustomerDataRequest customerRequest) throws EntityConflictException {
+        Customer customer=findByMobile(customerRequest.getMobile());
+        if(customer==null){
+            sendWelcomeMail(customerRequest);
+            customer = CustomerMapping.getCustomerFromRequest(customerRequest);
             hashAndSavePassword(customer);
-        } catch (PersistenceException e) {
-            throw new EntityConflictException("Mobile no is already associated with other account");
+        }else{
+            customer.setPassword(customerRequest.getPassword());
+            hashAndSavePassword(customer);
         }
         return customer;
     }

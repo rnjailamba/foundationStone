@@ -14,7 +14,7 @@ import java.util.List;
 @ImplementedBy(CustomerServiceImp.class)
 public interface CustomerService {
 
-    CustomerDevice create(CustomerDataRequest customerRequest);
+    CustomerDevice resetPassword(CustomerDataRequest customerRequest);
     CustomerDevice createRuid(CustomerDataRequest customerRequest);
     CustomerDevice createAccount(CustomerDataRequest customerRequest);
     Customer findByMobile(String mobile);
@@ -26,7 +26,7 @@ public interface CustomerService {
     Customer findByFbId(String fbId);
     Customer findByEmail(String email);
     Customer findCustomerByCustomerId(int customerId);
-    Customer createCustomer(CustomerRequest customerRequest);
+    Customer createCustomer(CustomerDataRequest customerRequest);
     void removeRuid(CustomerRequest customerRequest);
     CustomerDevice findByRuid(String ruid);
     List<CustomerAddress> findAddressesByCustomerId(Integer customerId);

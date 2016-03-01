@@ -6,13 +6,9 @@ import com.cementify.userservice.exceptions.InvalidRequestException;
 import com.cementify.userservice.exceptions.NotAuthenticatedException;
 import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.mapping.CustomerMapping;
-import com.cementify.userservice.models.request.CustomerDataRequest;
-import com.cementify.userservice.models.request.CustomerRequest;
-import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
+import com.cementify.userservice.models.request.*;
 import com.cementify.userservice.models.response.CustomerResponse;
 import com.cementify.userservice.services.CustomerService;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import play.data.Form;
@@ -23,7 +19,6 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,16 +112,52 @@ public class CustomerController extends Controller {
 		}
         CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
         try {
-            CustomerDevice customerDevice = customerService.create(customerDataRequest);
+            CustomerDevice customerDevice = customerService.createAccount(customerDataRequest);
             CustomerResponse customerResponse = CustomerMapping
                     .getCustomerResponseFromCustomerDevice(customerDevice);
             return ok(Json.toJson(customerResponse));
         } catch (InvalidRequestException e) {
             return status(400, "Bad request");
-        } catch (EntityConflictException e) {
-            return status(409, "Resource conflict");
         }
     }
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result createCustomer() {
+		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
+		if (customerDataRequestForm.hasErrors()) {
+			return status(400, "Bad request");
+		}
+		CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
+		try {
+			Customer customer = customerService.createCustomer(customerDataRequest);
+			CustomerResponse customerResponse = CustomerMapping
+					.getCustomerResponse(customer);
+			return ok(Json.toJson(customerResponse));
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad request");
+		}
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result resetPassword() {
+		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
+		if (customerDataRequestForm.hasErrors()) {
+			return status(400, "Bad request");
+		}
+		CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
+		try {
+			CustomerDevice customerDevice = customerService.resetPassword(customerDataRequest);
+			CustomerResponse customerResponse = CustomerMapping
+					.getCustomerResponseFromCustomerDevice(customerDevice);
+			return ok(Json.toJson(customerResponse));
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad request");
+		}
+	}
 
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
@@ -346,26 +377,28 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result addCustomerAddressList() {
+		boolean isPartialUpdated=false;
 		try {
 			JsonNode jsonNode=request().body().asJson();
-			Test test=Json.fromJson(jsonNode,Test.class);
-			List<CustomerAddress> customerAddresses=test.getCustomerAddresses();
+			CustomerAddressRequest customerAddressRequest =Json.fromJson(jsonNode,CustomerAddressRequest.class);
+			List<CustomerAddress> customerAddresses=customerAddressRequest.getAddresses();
 			for(CustomerAddress customerAddress :customerAddresses){
 				Form<CustomerAddress> customerAddressForm = formFactory.form(CustomerAddress.class);
 				customerAddressForm=customerAddressForm.fill(customerAddress);
 				if (customerAddressForm.hasErrors()) {
-					return status(400, "Bad Request");
+					isPartialUpdated=true;
+					continue;
 				}
 				CustomerAddress customerAdd=customerAddressForm.get();
 				customerService.addAddress(customerAdd);
 			}
-
+			if(isPartialUpdated)
+				return status(207, "Some data are inconsistent");
+			else
 			return status(200, "Successfully Added");
 		} catch (InvalidRequestException e) {
 			return status(400, "Bad Request");
 		} catch (EntityNotFoundException e) {
-			return status(404, e.getMessage());
-		}catch (Exception e){
 			return status(404, e.getMessage());
 		}
 
@@ -374,14 +407,24 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result addCustomerLocationList() {
-		Form<CustomerLocation> customerLocationForm = formFactory.form(CustomerLocation.class);
-		customerLocationForm=customerLocationForm.bindFromRequest();
-		if (customerLocationForm.hasErrors()) {
-			return status(400, "Bad Request");
-		}
-		CustomerLocation customerLocation=customerLocationForm.get();
+		boolean isPartialUpdated=false;
 		try {
-			customerService.addLocation(customerLocation);
+			JsonNode jsonNode=request().body().asJson();
+			CustomerLocationRequest customerLocationRequest =Json.fromJson(jsonNode,CustomerLocationRequest.class);
+			List<CustomerLocation> customerLocations=customerLocationRequest.getLocations();
+			for(CustomerLocation customerLocation :customerLocations){
+				Form<CustomerLocation> customerLocationForm = formFactory.form(CustomerLocation.class);
+				customerLocationForm=customerLocationForm.fill(customerLocation);
+				if (customerLocationForm.hasErrors()) {
+					isPartialUpdated=true;
+					continue;
+				}
+				CustomerLocation customerLoc=customerLocationForm.get();
+				customerService.addLocation(customerLoc);
+			}
+			if(isPartialUpdated)
+				return status(207, "Some data are inconsistent");
+			else
 			return status(200, "Successfully Added");
 		} catch (InvalidRequestException e) {
 			return status(400, "Bad Request");
@@ -394,14 +437,24 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result addCustomerContactList() {
-		Form<CustomerContact> customerContactForm = formFactory.form(CustomerContact.class);
-		customerContactForm=customerContactForm.bindFromRequest();
-		if (customerContactForm.hasErrors()) {
-			return status(400, "Bad Request");
-		}
-		CustomerContact customerContact=customerContactForm.get();
+		boolean isPartialUpdated=false;
 		try {
-			customerService.addContact(customerContact);
+			JsonNode jsonNode=request().body().asJson();
+			CustomerContactRequest customerContactRequest =Json.fromJson(jsonNode,CustomerContactRequest.class);
+			List<CustomerContact> customerContacts=customerContactRequest.getContacts();
+			for(CustomerContact customerContact :customerContacts){
+				Form<CustomerContact> customerContactForm = formFactory.form(CustomerContact.class);
+				customerContactForm=customerContactForm.fill(customerContact);
+				if (customerContactForm.hasErrors()) {
+					isPartialUpdated=true;
+					continue;
+				}
+				CustomerContact customerCont=customerContactForm.get();
+				customerService.addContact(customerCont);
+			}
+			if(isPartialUpdated)
+				return status(207, "Some data are inconsistent");
+			else
 			return status(200, "Successfully Added");
 		} catch (InvalidRequestException e) {
 			return status(400, "Bad Request");
@@ -414,21 +467,31 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result addCustomerEmailList() {
-		Form<CustomerEmail> customerEmailForm = formFactory.form(CustomerEmail.class);
-		customerEmailForm=customerEmailForm.bindFromRequest();
-		if (customerEmailForm.hasErrors()) {
-			return status(400, "Bad Request");
-		}
-		CustomerEmail customerEmail=customerEmailForm.get();
+		boolean isPartialUpdated=false;
 		try {
-			customerService.addEmail(customerEmail);
-			return status(200, "Successfully Added");
+			JsonNode jsonNode=request().body().asJson();
+			CustomerEmailRequest customerEmailRequest =Json.fromJson(jsonNode,CustomerEmailRequest.class);
+			List<CustomerEmail> customerEmails=customerEmailRequest.getEmails();
+			for(CustomerEmail customerEmail :customerEmails){
+				Form<CustomerEmail> customerEmailForm = formFactory.form(CustomerEmail.class);
+				customerEmailForm=customerEmailForm.fill(customerEmail);
+				if (customerEmailForm.hasErrors()) {
+					isPartialUpdated=true;
+					continue;
+				}
+				CustomerEmail customeremail=customerEmailForm.get();
+				customerService.addEmail(customeremail);
+			}
+
+			if(isPartialUpdated)
+				return status(207, "Some data are inconsistent");
+			else
+			    return status(200, "Successfully Added");
 		} catch (InvalidRequestException e) {
 			return status(400, "Bad Request");
 		} catch (EntityNotFoundException e) {
 			return status(404, e.getMessage());
 		}
-
 	}
 
 	@Transactional(value = "customerdb")

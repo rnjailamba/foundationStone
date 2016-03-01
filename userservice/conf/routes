@@ -29,4 +29,6 @@ POST          /userService/addCustomerContactList                 com.cementify.
 POST          /userService/addCustomerLocationList                com.cementify.userservice.controllers.CustomerController.addCustomerLocationList()
 POST          /userService/addCustomerAddressList                 com.cementify.userservice.controllers.CustomerController.addCustomerAddressList()
 POST          /userService/addCustomerEmailList                   com.cementify.userservice.controllers.CustomerController.addCustomerEmailList()
+POST          /userService/resetPassword                          com.cementify.userservice.controllers.CustomerController.resetPassword()
+POST          /userService/createCustomer                         com.cementify.userservice.controllers.CustomerController.createCustomer()
 
