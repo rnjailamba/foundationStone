@@ -2,13 +2,23 @@ package com.cementify.userservice.models.request;
 
 import play.data.validation.Constraints;
 
+import javax.validation.Constraint;
+
 /**
  * Created by roshan on 28/02/16.
  */
 public class CustomerResetPasswordRequest {
 
     @Constraints.Required
-    private String mobile;
+    private Integer customerId;
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
 
     @Constraints.Required
     @Constraints.MinLength(8)
@@ -36,13 +46,7 @@ public class CustomerResetPasswordRequest {
         this.password = password;
     }
 
-    public String getMobile() {
-        return mobile;
-    }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
 
 
 }

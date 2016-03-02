@@ -105,9 +105,9 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public boolean updatePassword(CustomerResetPasswordRequest customerResetPasswordRequest) {
-        Customer customer = findByMobile(customerResetPasswordRequest.getMobile());
+        Customer customer = findCustomerByCustomerId(customerResetPasswordRequest.getCustomerId());
         if (customer == null) {
-            throw new EntityNotFoundException("Customer with mobile #  " + customerResetPasswordRequest.getMobile()
+            throw new EntityNotFoundException("Customer with mobile #  " + customerResetPasswordRequest.getCustomerId()
                     + " not found.");
         }
         boolean oldPasswordCheck = customer.hasPassword(customerResetPasswordRequest.getOldPassword());
@@ -235,7 +235,7 @@ public class CustomerServiceImp implements CustomerService {
     @Override
     public void removeRuid(CustomerRequest customerRequest) {
         CustomerDevice customerDevice=findByRuid(customerRequest.getRuid());
-        if(customerRequest.getCustomerId().equals(customerDevice.getCustomer().getCustomerId())){
+        if (customerRequest.getCustomerId().equals(customerDevice.getCustomer().getCustomerId())){
            JPA.em().remove(customerDevice);
         }else {
             throw new NotAuthenticatedException("CustomerId conflict Exception");
