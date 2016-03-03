@@ -24,7 +24,6 @@ public class CustomerMapping {
         customerResponse.setCustomerId(customer.getCustomerId());
         customerResponse.setEmail(customer.getEmail());
         customerResponse.setIsVerified(customer.getIsVerified());
-        customerResponse.setMobile(customer.getMobile());
         return customerResponse;
     }
 
@@ -46,7 +45,6 @@ public class CustomerMapping {
         customerResponse.setCustomerId(customer.getCustomerId());
         customerResponse.setEmail(customer.getEmail());
         customerResponse.setIsVerified(customer.getIsVerified());
-        customerResponse.setMobile(customer.getMobile());
         customerResponse.setFbEmail(customer.getFbEmail());
         customerResponse.setFbId(customer.getFbId());
         customerResponse.setGoogleEmail(customer.getGoogleEmail());
@@ -61,7 +59,6 @@ public class CustomerMapping {
         customerResponse.setCustomerId(customer.getCustomerId());
         customerResponse.setEmail(customer.getEmail());
         customerResponse.setIsVerified(customer.getIsVerified());
-        customerResponse.setMobile(customer.getMobile());
         customerResponse.setRuid(customerDevice.getRuid());
         return customerResponse;
     }

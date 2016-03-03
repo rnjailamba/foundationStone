@@ -37,6 +37,8 @@ public class CustomerServiceImp implements CustomerService {
             hashAndSavePassword(customer);
         }else{
             customer.setPassword(customerRequest.getPassword());
+            if(customerRequest.getEmail()!=null)
+            customer.setEmail(customerRequest.getEmail());
             hashAndSavePassword(customer);
         }
         return customer;
@@ -123,10 +125,10 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public void updateFbId(CustomerRequest customerRequest) {
-        Customer customer = findByMobile(customerRequest.getMobile());
+        Customer customer = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getMobile() + " not found.");
+                    + customer.getCustomerId() + " not found.");
         }
         customer.setFbId(customerRequest.getFbId());
         customer.setFbEmail(customerRequest.getFbEmail());
@@ -135,10 +137,10 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public void updateGoogId(CustomerRequest customerRequest) {
-        Customer customer = findByMobile(customerRequest.getMobile());
+        Customer customer = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getMobile() + " not found.");
+                    + customer.getCustomerId() + " not found.");
         }
         customer.setGoogleEmail(customerRequest.getGoogleEmail());
         customer.setGoogleId(customerRequest.getGoogleId());
@@ -147,10 +149,10 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public void setVerified(CustomerRequest customerRequest) {
-        Customer customer = findByMobile(customerRequest.getMobile());
+        Customer customer = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getMobile() + " not found.");
+                    + customer.getCustomerId() + " not found.");
         }
         customer.setIsVerified(customerRequest.getIsVerified());
         JPA.em().persist(customer);

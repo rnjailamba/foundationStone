@@ -5,8 +5,6 @@ package com.cementify.userservice.models.response;
  */
 public class CustomerResponse {
 
-    private String mobile;
-
     private Integer customerId;
 
     private String ruid;
@@ -14,14 +12,6 @@ public class CustomerResponse {
     private String email;
 
     private Boolean isVerified;
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;

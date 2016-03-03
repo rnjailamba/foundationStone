@@ -9,7 +9,6 @@ import play.data.validation.Constraints;
  */
 public class CustomerRequest {
 
-    @Constraints.Required
     private String mobile;
 
     private String ruid;
