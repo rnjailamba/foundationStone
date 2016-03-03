@@ -28,7 +28,7 @@ public class CustomerRequest {
     @Constraints.Email
     private String email;
 
-    private Boolean isVerified;
+    private boolean isVerified;
 
 
    @Constraints.MinLength(8)
@@ -75,11 +75,11 @@ public class CustomerRequest {
         return customerId;
     }
 
-    public void setIsVerified(Boolean isVerified) {
+    public void setIsVerified(boolean isVerified) {
         this.isVerified = isVerified;
     }
 
-    public Boolean getIsVerified() {
+    public boolean getIsVerified() {
         return isVerified;
     }
 
