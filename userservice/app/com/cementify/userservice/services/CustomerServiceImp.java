@@ -63,7 +63,7 @@ public class CustomerServiceImp implements CustomerService {
         Customer customer = findByMobile(customerRequest.getMobile());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getMobile() + " not found.");
+                    + customerRequest + " not found.");
         }
         if (customer.hasPassword(customerRequest.getPassword())) {
             UUID ruid = UUID.randomUUID();
