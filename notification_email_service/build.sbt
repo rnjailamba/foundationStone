@@ -9,7 +9,8 @@ scalaVersion := "2.11.6"
 libraryDependencies ++= Seq(
   javaJdbc,
   cache,
-  javaWs
+  javaWs,
+  "com.typesafe.play" %% "play-mailer" % "4.0.0-M1"
 )
 
 // Play provides two styles of routers, one expects its actions to be injected, the

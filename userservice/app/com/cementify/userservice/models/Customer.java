@@ -41,11 +41,9 @@ public class Customer {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "first_name")
-    private String firstName;
+    @Column(name = "user_name")
+    private String userName;
 
-    @Column(name = "last_name")
-    private String lastName;
 
     @Column(name = "fb_id")
     private String fbId;
@@ -108,13 +106,6 @@ public class Customer {
         this.email = email;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
 
     public void setFbId(String fbId) {
         this.fbId = fbId;
@@ -164,8 +155,6 @@ public class Customer {
         this.birthday = birthday;
     }
 
-
-
     public Integer getCustomerId() {
         return customerId;
     }
@@ -178,12 +167,12 @@ public class Customer {
         return email;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getFbId() {

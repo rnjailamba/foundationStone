@@ -63,7 +63,7 @@ public class CustomerServiceImp implements CustomerService {
         Customer customer = findByMobile(customerRequest.getMobile());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getMobile() + " not found.");
+                    + customerRequest.getMobile() + " not found.");
         }
         if (customer.hasPassword(customerRequest.getPassword())) {
             UUID ruid = UUID.randomUUID();
@@ -95,8 +95,7 @@ public class CustomerServiceImp implements CustomerService {
         toUpdate.setBirthday(customerRequest.getBirthDay());
         toUpdate.setGoogleEmail(customerRequest.getGoogleEmail());
         toUpdate.setGoogleId(customerRequest.getGoogleId());
-        toUpdate.setFirstName(customerRequest.getFirstName());
-        toUpdate.setLastName(customerRequest.getLastName());
+        toUpdate.setUserName(customerRequest.getFirstName());
         toUpdate.setIsMale(customerRequest.getIsMale());
         toUpdate.setIsVerified(customerRequest.getIsVerified());
         toUpdate.setIsCodBlocked(customerRequest.getIsCodBlocked());
@@ -128,7 +127,7 @@ public class CustomerServiceImp implements CustomerService {
         Customer customer = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getCustomerId() + " not found.");
+                    + customerRequest.getCustomerId() + " not found.");
         }
         customer.setFbId(customerRequest.getFbId());
         customer.setFbEmail(customerRequest.getFbEmail());
@@ -140,7 +139,7 @@ public class CustomerServiceImp implements CustomerService {
         Customer customer = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getCustomerId() + " not found.");
+                    + customerRequest.getCustomerId() + " not found.");
         }
         customer.setGoogleEmail(customerRequest.getGoogleEmail());
         customer.setGoogleId(customerRequest.getGoogleId());
@@ -152,7 +151,7 @@ public class CustomerServiceImp implements CustomerService {
         Customer customer = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
-                    + customer.getCustomerId() + " not found.");
+                    + customerRequest.getCustomerId() + " not found.");
         }
         customer.setIsVerified(customerRequest.getIsVerified());
         JPA.em().persist(customer);
