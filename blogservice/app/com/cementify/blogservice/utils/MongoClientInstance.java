@@ -10,8 +10,6 @@ import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.async.client.MongoClients;
 import com.mongodb.client.model.geojson.codecs.GeoJsonCodecProvider;
 import com.mongodb.connection.ClusterSettings;
-import fr.javatic.mongo.jacksonCodec.JacksonCodecProvider;
-import fr.javatic.mongo.jacksonCodec.ObjectMapperFactory;
 import org.bson.codecs.BsonValueCodecProvider;
 import org.bson.codecs.DocumentCodecProvider;
 import org.bson.codecs.ValueCodecProvider;
