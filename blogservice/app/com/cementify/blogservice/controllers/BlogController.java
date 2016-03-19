@@ -50,10 +50,20 @@ public class BlogController extends Controller {
             @Override
             public void onResult(final User document, final Throwable t) {
                 System.out.println(Json.toJson(document));
-                ((CompletableFuture)completionStage).complete(document);
+
             }
         };
-        collection.find(eq("name", user.getName())).first(printDocument);
+        //collection.find(eq("name", user.getName())).first(printDocument);
+        User user1=new User();
+        user1.setName("ttthfh");
+        user1.setType("ggjjkjjk9jj");
+        collection.insertOne(user1, new SingleResultCallback<Void>() {
+            @Override
+            public void onResult(Void aVoid, Throwable throwable) {
+                System.out.println("inserted");
+                ((CompletableFuture)completionStage).complete(user1);
+            }
+        });
      return CompletableFuture.supplyAsync(() ->{
                  try{
                      return ((CompletableFuture)completionStage).get();

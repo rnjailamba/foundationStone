@@ -1,8 +1,6 @@
 package com.cementify.blogservice.codecs;
 
-import com.cementify.blogservice.utils.FieldData;
-import com.cementify.blogservice.utils.InvokeGetterSetter;
-import com.cementify.blogservice.utils.ObjectAndDocumentFieldNameMappping;
+import com.cementify.blogservice.utils.*;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;
@@ -21,16 +19,21 @@ import java.util.*;
 public interface GenericCodec {
 
     default void writeDocument(BsonWriter writer, Object value, EncoderContext encoderContext){
+        IdAndFieldData idAndFieldData=new IdAndFieldData();
         Map<String, String> objectDocumentMapping = new HashMap<String, String>();
-        ObjectAndDocumentFieldNameMappping.getObjectDocumentFields(objectDocumentMapping, getEncoderClass());
+        IdData idData=new IdData();
+        idAndFieldData.setFieldDocumentMappings(objectDocumentMapping);
+        idAndFieldData.setIdData(idData);
+        ObjectAndDocumentFieldNameMappping.getObjectDocumentFieldMappings(idAndFieldData, getEncoderClass());
         Set<String> objectField = objectDocumentMapping.keySet();
         Iterator<String> objectFieldIterator = objectField.iterator();
         writer.writeStartDocument();
+        beforeFields(writer,encoderContext,idData,value);
         while (objectFieldIterator.hasNext()) {
             String fieldName = objectFieldIterator.next();
             String documentName=objectDocumentMapping.get(fieldName);
             Object object = InvokeGetterSetter.invokeGetter(value, fieldName);
-            writeValue(writer,encoderContext,value,documentName);
+            writeValue(writer,encoderContext,object,documentName);
         }
         writer.writeEndDocument();
     }
@@ -73,7 +76,7 @@ public interface GenericCodec {
 
     default Object readDocument(BsonReader reader, DecoderContext decoderContext, Object object) {
         Map<String, FieldData> objectDocumentMapping = new HashMap<String, FieldData>();
-        ObjectAndDocumentFieldNameMappping.getDocumentObjectFields(objectDocumentMapping, getEncoderClass());
+        ObjectAndDocumentFieldNameMappping.getDocumentObjectFieldMappings(objectDocumentMapping, getEncoderClass());
         reader.readStartDocument();
         while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
             String documentName = reader.readName();
@@ -135,4 +138,13 @@ public interface GenericCodec {
     Class<?> getEncoderClass();
 
     CodecRegistry getCodecRegistry();
+
+
+    default void beforeFields(final BsonWriter bsonWriter, final EncoderContext encoderContext,
+                              final IdData idData,Object value) {
+         if (encoderContext.isEncodingCollectibleDocument() && idData.getDocumentIdName()!=null) {
+             Object object = InvokeGetterSetter.invokeGetter(value, idData.getFieldIdName());
+            writeValue(bsonWriter, encoderContext, object,idData.getDocumentIdName());
+            }
+        }
 }

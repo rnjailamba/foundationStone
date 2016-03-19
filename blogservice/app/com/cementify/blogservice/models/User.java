@@ -1,6 +1,7 @@
 package com.cementify.blogservice.models;
 
 import com.cementify.blogservice.customannotations.FieldName;
+import com.cementify.blogservice.customannotations.Id;
 import org.bson.types.ObjectId;
 
 /**
@@ -19,7 +20,7 @@ public class User {
     }
 
 
-    @FieldName(value = "_id")
+    @Id(value = "_id")
     private ObjectId id;
 
     public ObjectId getId() {

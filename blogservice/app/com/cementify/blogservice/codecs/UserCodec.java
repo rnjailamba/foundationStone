@@ -1,28 +1,18 @@
 package com.cementify.blogservice.codecs;
 
-import com.cementify.blogservice.utils.FieldData;
+
 import com.cementify.blogservice.models.User;
-import com.cementify.blogservice.utils.InvokeGetterSetter;
-import com.cementify.blogservice.utils.ObjectAndDocumentFieldNameMappping;
 import org.bson.*;
-import org.bson.codecs.Codec;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.types.ObjectId;
 
-import java.lang.reflect.Field;
-import java.util.*;
 
 /**
  * Created by roshan on 16/03/16.
  */
 public class UserCodec implements CollectibleCodec<User>,GenericCodec {
-
-    public UserCodec() {
-
-    }
 
     private CodecRegistry codecRegistry;
 
