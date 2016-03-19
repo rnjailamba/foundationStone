@@ -1,7 +1,7 @@
 package com.cementify.blogservice.utils;
 
 import com.cementify.blogservice.exceptions.MongoDbServerNotFoundException;
-import com.cementify.blogservice.codecproviders.UserCodecProvider;
+import com.cementify.blogservice.codecproviders.CustomCodecProvider;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mongodb.ServerAddress;
@@ -73,9 +73,8 @@ public class MongoClientInstance {
 
             }
             ClusterSettings clusterSettings = ClusterSettings.builder().hosts(serverAddresses).build();
-        //need to be ramoved
         CodecRegistry codecRegistry = CodecRegistries.fromRegistries(CodecRegistries.fromProviders
-                (Arrays.asList(new UserCodecProvider(), new ValueCodecProvider(),
+                (Arrays.asList(new CustomCodecProvider(), new ValueCodecProvider(),
                         new DocumentCodecProvider(),
                         new BsonValueCodecProvider(),
                         new GeoJsonCodecProvider())));

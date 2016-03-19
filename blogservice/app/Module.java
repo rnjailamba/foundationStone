@@ -1,6 +1,7 @@
 import com.cementify.blogservice.services.BlogService;
 import com.cementify.blogservice.services.BlogServiceImp;
 import com.cementify.blogservice.utils.MongoClientInstance;
+import com.cementify.blogservice.utils.MongoHandler;
 import com.google.inject.AbstractModule;
 import play.Configuration;
 import play.Environment;
@@ -32,6 +33,7 @@ public class Module extends AbstractModule {
     public void configure() {
         bind(BlogService.class).to(BlogServiceImp.class);
         bind(MongoClientInstance.class).asEagerSingleton();
+       // bind(MongoHandler.class).asEagerSingleton();
     }
 
 }

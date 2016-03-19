@@ -1,7 +1,9 @@
 package com.cementify.blogservice.controllers;
 
+import com.cementify.blogservice.models.Address;
 import com.cementify.blogservice.models.User;
 import com.cementify.blogservice.utils.MongoClientInstance;
+import com.cementify.blogservice.utils.MongoHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.mongodb.async.SingleResultCallback;
@@ -16,6 +18,8 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import static com.mongodb.client.model.Filters.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
@@ -27,6 +31,8 @@ public class BlogController extends Controller {
 
     @Inject
     MongoClientInstance mongoClientInstance;
+
+
 
     public Result ping() {
         return ok("Hello BlogService");
@@ -44,26 +50,27 @@ public class BlogController extends Controller {
         MongoCollection<User> collection=
                 mongoClientInstance.getMongoClient().getDatabase("testdb").getCollection("col",User.class);
         User user =new User();
-        user.setName("test2");
-        CompletionStage<User> completionStage=new CompletableFuture();
-        SingleResultCallback<User> printDocument = new SingleResultCallback<User>() {
-            @Override
-            public void onResult(final User document, final Throwable t) {
-                System.out.println(Json.toJson(document));
+        user.setName("testh1");
+        user.setType("tyuueueu");
+        List<String> list=new ArrayList<>();
+        list.add("first");
+        list.add("second");
+        list.add("third");
+        user.setListCheck(list);
+        List<List<Address>> addressesList=new ArrayList<>();
+        for(int i=0;i<3;i++){
+            List<Address> addresses=new ArrayList<>();
+            Address address=new Address();
+            address.setIsMale(false);
+            address.setPhoneNo("90176728838");
+            addresses.add(address);
+            addresses.add(address);
+            addressesList.add(addresses);
+        }
 
-            }
-        };
-        //collection.find(eq("name", user.getName())).first(printDocument);
-        User user1=new User();
-        user1.setName("ttthfh");
-        user1.setType("ggjjkjjk9jj");
-        collection.insertOne(user1, new SingleResultCallback<Void>() {
-            @Override
-            public void onResult(Void aVoid, Throwable throwable) {
-                System.out.println("inserted");
-                ((CompletableFuture)completionStage).complete(user1);
-            }
-        });
+        user.setAddress(addressesList);
+        MongoHandler<User> mongoHandler=new MongoHandler<>();
+        CompletionStage<?> completionStage=mongoHandler.readDocuments(collection,eq("name","testh1"));
      return CompletableFuture.supplyAsync(() ->{
                  try{
                      return ((CompletableFuture)completionStage).get();

@@ -1,8 +1,11 @@
 package com.cementify.blogservice.models;
 
+import com.cementify.blogservice.customannotations.EnclosedGenericClass;
 import com.cementify.blogservice.customannotations.FieldName;
 import com.cementify.blogservice.customannotations.Id;
 import org.bson.types.ObjectId;
+
+import java.util.List;
 
 /**
  * Created by roshan on 16/03/16.
@@ -62,5 +65,27 @@ public class User {
     @FieldName(value = "type")
     private String type;
 
+    @FieldName(value = "listcheck")
+    private List<String> listCheck;
 
+
+    public List<String> getListCheck() {
+        return listCheck;
+    }
+
+    public void setListCheck(List<String> listCheck) {
+        this.listCheck = listCheck;
+    }
+
+    @EnclosedGenericClass(value = Address.class)
+    @FieldName(value = "houseaddress")
+    private List<List<Address>> address;
+
+    public List<List<Address>> getAddress() {
+        return address;
+    }
+
+    public void setAddress(List<List<Address>> address) {
+        this.address = address;
+    }
 }

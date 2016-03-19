@@ -24,7 +24,7 @@ public interface GenericCodec {
         IdData idData=new IdData();
         idAndFieldData.setFieldDocumentMappings(objectDocumentMapping);
         idAndFieldData.setIdData(idData);
-        ObjectAndDocumentFieldNameMappping.getObjectDocumentFieldMappings(idAndFieldData, getEncoderClass());
+        idAndFieldData=ObjectAndDocumentFieldNameMappping.getObjectDocumentFieldMappings(idAndFieldData, getEncoderClass());
         Set<String> objectField = objectDocumentMapping.keySet();
         Iterator<String> objectFieldIterator = objectField.iterator();
         writer.writeStartDocument();
@@ -39,11 +39,10 @@ public interface GenericCodec {
     }
 
 
-    default void writeArrayDocument(final BsonWriter writer, final Iterable<Object> list, final EncoderContext encoderContext,
-                                    String documentName) {
-        writer.writeStartArray(documentName);
+    default void writeArrayDocument(final BsonWriter writer, final Iterable<Object> list, final EncoderContext encoderContext) {
+        writer.writeStartArray();
         for (final Object value : list) {
-            writeValue(writer, encoderContext, value,documentName);
+            writeValue(writer, encoderContext, value,null);
         }
         writer.writeEndArray();
     }
@@ -51,24 +50,25 @@ public interface GenericCodec {
 
     default void writeValue(final BsonWriter writer, final EncoderContext encoderContext, final Object value,
                             String documentName) {
-        if (value == null) {
-            writer.writeNull(documentName);
-        } else if (Iterable.class.isAssignableFrom(value.getClass())) {
-            writeArrayDocument(writer, (Iterable<Object>) value, encoderContext.getChildContext(),documentName);
-        } else if (value instanceof String) {
-            writer.writeString(documentName, (String) value);
-        } else if (value instanceof Boolean) {
-            writer.writeBoolean(documentName, (Boolean) value);
-        } else if (value instanceof Integer) {
-            writer.writeInt32(documentName, (Integer) value);
-        } else if (value instanceof Long) {
-            writer.writeInt64(documentName, (Long) value);
-        } else if (value instanceof ObjectId) {
-            writer.writeObjectId(documentName, (ObjectId) value);
-        } else if (value instanceof Date) {
-            writer.writeDateTime(documentName, ((Date)value).getTime());
-        } else {
+        if(documentName !=null)
             writer.writeName(documentName);
+         if (value instanceof String) {
+            writer.writeString((String) value);
+        } else if (value instanceof Boolean) {
+            writer.writeBoolean((Boolean) value);
+        } else if (value == null) {
+                writer.writeNull();
+        } else if (Iterable.class.isAssignableFrom(value.getClass())) {
+            writeArrayDocument(writer, (Iterable<Object>) value, encoderContext.getChildContext());
+        } else if (value instanceof Integer) {
+            writer.writeInt32((Integer) value);
+        } else if (value instanceof Long) {
+            writer.writeInt64((Long) value);
+        } else if (value instanceof ObjectId) {
+            writer.writeObjectId((ObjectId) value);
+        } else if (value instanceof Date) {
+            writer.writeDateTime(((Date) value).getTime());
+        } else {
             Codec codec = getCodecRegistry().get(value.getClass());
             encoderContext.encodeWithChildContext(codec, writer, value);
         }
@@ -76,21 +76,24 @@ public interface GenericCodec {
 
     default Object readDocument(BsonReader reader, DecoderContext decoderContext, Object object) {
         Map<String, FieldData> objectDocumentMapping = new HashMap<String, FieldData>();
-        ObjectAndDocumentFieldNameMappping.getDocumentObjectFieldMappings(objectDocumentMapping, getEncoderClass());
+        objectDocumentMapping=ObjectAndDocumentFieldNameMappping.getDocumentObjectFieldMappings(objectDocumentMapping, getEncoderClass());
         reader.readStartDocument();
         while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
             String documentName = reader.readName();
             FieldData fieldData = objectDocumentMapping.get(documentName);
+            if(fieldData==null){
+                reader.skipValue();
+                continue;
+            }
             String fieldName = fieldData.getFieldName();
-            Field field = fieldData.getField();
-            Object value = readValue(reader, decoderContext, field);
+            Object value = readValue(reader, decoderContext, fieldData);
             InvokeGetterSetter.invokeSetter(object, fieldName, value);
         }
         reader.readEndDocument();
         return object;
     }
 
-    default Object readValue(BsonReader reader, DecoderContext decoderContext, Field field) {
+    default Object readValue(BsonReader reader, DecoderContext decoderContext, FieldData fieldData) {
         switch (reader.getCurrentBsonType()) {
             case INT32:
                 Integer intValue = reader.readInt32();
@@ -111,10 +114,16 @@ public interface GenericCodec {
                 Date dateValue = new Date(reader.readDateTime());
                 return dateValue;
             case DOCUMENT:
-                Object embeddedObject = getCodecRegistry().get(field.getClass()).decode(reader, decoderContext);
+                Class<?> clazz=null;
+                if(fieldData.getEnclosedGenericClass()!=null){
+                    clazz=fieldData.getEnclosedGenericClass();
+                }else {
+                     clazz=fieldData.getField().getType();
+                }
+                Object embeddedObject = getCodecRegistry().get(clazz).decode(reader, decoderContext);
                 return embeddedObject;
             case ARRAY:
-                List<Object> embeddedList = readArrayDocument(reader, decoderContext, field);
+                List<Object> embeddedList = readArrayDocument(reader, decoderContext, fieldData);
                 return embeddedList;
             case NULL:
                 reader.readNull();
@@ -124,11 +133,11 @@ public interface GenericCodec {
         return null;
     }
 
-    default List<Object> readArrayDocument(BsonReader reader, DecoderContext decoderContext, Field field) {
+    default List<Object> readArrayDocument(BsonReader reader, DecoderContext decoderContext, FieldData fieldData) {
         List<Object> listObject = new ArrayList<>();
         reader.readStartArray();
         while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
-            Object value = readValue(reader, decoderContext, field);
+            Object value = readValue(reader, decoderContext, fieldData);
             listObject.add(value);
         }
         reader.readEndArray();
