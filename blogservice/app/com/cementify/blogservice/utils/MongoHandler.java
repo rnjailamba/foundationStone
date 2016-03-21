@@ -6,6 +6,8 @@ import com.mongodb.Block;
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
 
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.conversions.Bson;
 import play.Logger;
 
@@ -107,6 +109,139 @@ public class MongoHandler<T> {
         return singleResultCallback;
     }
 
+    public CompletionStage<?> insertManyDocuments(MongoCollection<T> collection,List<T> objects){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        collection.insertMany(objects, getMultipleInsertResultCallBack(completionStage, objects));
+        return completionStage;
+    }
+
+    public SingleResultCallback<Void> getMultipleInsertResultCallBack(CompletionStage<T> completionStage,List<T> objects){
+        SingleResultCallback<Void> singleResultCallback=new SingleResultCallback<Void>() {
+            @Override
+            public void onResult(Void result, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Objects not inserted due to error " +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else{
+                    Logger.info("Objects inserted is "+objects);
+                    ((CompletableFuture)completionStage).complete(objects);
+                }
+            }
+        };
+        return singleResultCallback;
+    }
+
+    public CompletionStage<?> countDocuments(MongoCollection<T> collection,Bson filters){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        collection.count(filters, getCountResultCallBack(completionStage, filters));
+        return completionStage;
+    }
+
+
+    public SingleResultCallback<Long> getCountResultCallBack(CompletionStage<T> completionStage,Bson filters){
+        SingleResultCallback<Long> singleResultCallback=new SingleResultCallback<Long>() {
+            @Override
+            public void onResult(Long count, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Error during count for "+filters +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else{
+                    Logger.info("Object count for "+filters +" is "+count);
+                    ((CompletableFuture)completionStage).complete(count);
+                }
+            }
+        };
+        return singleResultCallback;
+    }
+
+    public CompletionStage<?> updateOneDocuments(MongoCollection<T> collection,Bson filters,Bson update){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        collection.updateOne(filters,update, getUpdateOneResultCallBack(completionStage, filters, update));
+        return completionStage;
+    }
+
+    public SingleResultCallback<UpdateResult> getUpdateOneResultCallBack(CompletionStage<T> completionStage,Bson filters,Bson update){
+        SingleResultCallback<UpdateResult> singleResultCallback=new SingleResultCallback<UpdateResult>() {
+            @Override
+            public void onResult(UpdateResult result, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Error during "+"to update "+update+" for "+filters +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else{
+                    Logger.info("Sucessfully updated "+update+" for "+filters);
+                    ((CompletableFuture)completionStage).complete(result);
+                }
+            }
+        };
+        return singleResultCallback;
+    }
+
+
+    public CompletionStage<?> updateManyDocuments(MongoCollection<T> collection,Bson filters,Bson update){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        collection.updateMany(filters, update, getUpdateManyResultCallBack(completionStage, filters, update));
+        return completionStage;
+    }
+
+    public SingleResultCallback<UpdateResult> getUpdateManyResultCallBack(CompletionStage<T> completionStage,Bson filters,Bson update){
+        SingleResultCallback<UpdateResult> singleResultCallback=new SingleResultCallback<UpdateResult>() {
+            @Override
+            public void onResult(UpdateResult result, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Error during "+"to update "+update+" for "+filters +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else{
+                    Logger.info("Sucessfully updated "+update+" for "+filters);
+                    ((CompletableFuture)completionStage).complete(result);
+                }
+            }
+        };
+        return singleResultCallback;
+    }
+
+    public CompletionStage<?> deleteOneDocuments(MongoCollection<T> collection,Bson filters){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        collection.deleteOne(filters, getDeleteOneResultCallBack(completionStage, filters));
+        return completionStage;
+    }
+
+    public SingleResultCallback<DeleteResult> getDeleteOneResultCallBack(CompletionStage<T> completionStage,Bson filters){
+        SingleResultCallback<DeleteResult> singleResultCallback=new SingleResultCallback<DeleteResult>() {
+            @Override
+            public void onResult(DeleteResult result, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Error during "+"delete for "+filters +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else{
+                    Logger.info("Sucessfully Deleted for "+filters);
+                    ((CompletableFuture)completionStage).complete(result);
+                }
+            }
+        };
+        return singleResultCallback;
+    }
+
+    public CompletionStage<?> deleteManyDocuments(MongoCollection<T> collection,Bson filters){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        collection.deleteMany(filters, getDeleteManyResultCallBack(completionStage, filters));
+        return completionStage;
+    }
+
+    public SingleResultCallback<DeleteResult> getDeleteManyResultCallBack(CompletionStage<T> completionStage,Bson filters){
+        SingleResultCallback<DeleteResult> singleResultCallback=new SingleResultCallback<DeleteResult>() {
+            @Override
+            public void onResult(DeleteResult result, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Error during "+"delete for "+filters +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else{
+                    Logger.info("Sucessfully Deleted for "+filters);
+                    ((CompletableFuture)completionStage).complete(result);
+                }
+            }
+        };
+        return singleResultCallback;
+    }
 
 
 

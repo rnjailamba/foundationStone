@@ -10,6 +10,8 @@ import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import play.Logger;
 import play.libs.Json;
@@ -17,6 +19,7 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,42 +52,80 @@ public class BlogController extends Controller {
     public CompletionStage<Result> test(){
         MongoCollection<User> collection=
                 mongoClientInstance.getMongoClient().getDatabase("testdb").getCollection("col",User.class);
-        User user =new User();
-        user.setName("testh1");
-        user.setType("tyuueueu");
-        List<String> list=new ArrayList<>();
-        list.add("first");
-        list.add("second");
-        list.add("third");
-        user.setListCheck(list);
-        List<List<Address>> addressesList=new ArrayList<>();
-        for(int i=0;i<3;i++){
-            List<Address> addresses=new ArrayList<>();
-            Address address=new Address();
-            address.setIsMale(false);
-            address.setPhoneNo("90176728838");
-            addresses.add(address);
-            addresses.add(address);
-            addressesList.add(addresses);
+        List<User> users=new ArrayList<User>();
+        User user=null;
+        for(int i=1;i<=3;i++){
+            user =new User();
+            user.setName("testing"+i);
+            user.setType("tyuueueu");
+            List<String> list=new ArrayList<>();
+            list.add("first");
+            list.add("second");
+            list.add("third");
+            user.setListCheck(list);
+            List<List<Address>> addressesList=new ArrayList<>();
+            for(int j=0;j<3;j++){
+                List<Address> addresses=new ArrayList<>();
+                Address address=new Address();
+                address.setIsMale(false);
+                address.setPhoneNo("90176728838");
+                addresses.add(address);
+                addresses.add(address);
+                addressesList.add(addresses);
+            }
+
+            user.setAddress(addressesList);
+            users.add(user);
         }
 
-        user.setAddress(addressesList);
         MongoHandler<User> mongoHandler=new MongoHandler<>();
-        CompletionStage<?> completionStage=mongoHandler.readDocuments(collection,eq("name","testh1"));
-     return CompletableFuture.supplyAsync(() ->{
+        //insert one document  CompletionStage<?> completionStage=mongoHandler.insertOneDocuments(collection,user);
+        // inser multiple documents CompletionStage<?> completionStage=mongoHandler.insertManyDocuments(collection,users);
+        //read multiple documents  CompletionStage<?> completionStage=mongoHandler.readOneDocument(collection,eq("name","testing1"));
+       // read single documents CompletionStage<?> completionStage=mongoHandler.readOneDocument(collection, eq("name", "testing"));
+        /*return CompletableFuture.supplyAsync(() ->{
+            try{
+                return ((CompletableFuture)completionStage).get();
+            }catch (Exception e){
+                return null;
+            }
+        }).thenApply(usr -> {
+            if(usr!=null)
+                return ok(Json.toJson(usr));
+            else
+                return ok("raj");
+        });
+    }
+    */
+        //count no of document CompletionStage<?> completionStage=mongoHandler.countDocuments(collection,eq("name","testh"));
+        /*return CompletableFuture.supplyAsync(() ->{
                  try{
                      return ((CompletableFuture)completionStage).get();
                  }catch (Exception e){
                      return null;
                  }
-     }).thenApply(usr -> {
-         if(usr!=null)
-             return ok(Json.toJson(usr));
+     }).thenApply(count -> {
+         if(count!=null)
+             return ok(Json.toJson(count));
          else
              return ok("raj");
      });
     }
-
+*/
+        CompletionStage<?> completionStage=mongoHandler.deleteManyDocuments(collection, eq("name", "ttthfh"));
+        return CompletableFuture.supplyAsync(() ->{
+            try{
+                return ((CompletableFuture)completionStage).get();
+            }catch (Exception e){
+                return null;
+            }
+        }).thenApply(result -> {
+            if(result!=null)
+                return ok(Json.toJson(((DeleteResult)result).getDeletedCount()));
+            else
+                return ok("raj");
+        });
+    }
 
 
 
