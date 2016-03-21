@@ -82,8 +82,11 @@ public class BlogController extends Controller {
         //insert one document  CompletionStage<?> completionStage=mongoHandler.insertOneDocuments(collection,user);
         // inser multiple documents CompletionStage<?> completionStage=mongoHandler.insertManyDocuments(collection,users);
         //read multiple documents  CompletionStage<?> completionStage=mongoHandler.readOneDocument(collection,eq("name","testing1"));
-       // read single documents CompletionStage<?> completionStage=mongoHandler.readOneDocument(collection, eq("name", "testing"));
-        /*return CompletableFuture.supplyAsync(() ->{
+       // read single documents
+        User user1=new User();
+        user1.setName("test");
+        CompletionStage<?> completionStage=mongoHandler.readDocuments(collection, user1);
+        return CompletableFuture.supplyAsync(() ->{
             try{
                 return ((CompletableFuture)completionStage).get();
             }catch (Exception e){
@@ -96,7 +99,7 @@ public class BlogController extends Controller {
                 return ok("raj");
         });
     }
-    */
+
         //count no of document CompletionStage<?> completionStage=mongoHandler.countDocuments(collection,eq("name","testh"));
         /*return CompletableFuture.supplyAsync(() ->{
                  try{
@@ -112,7 +115,7 @@ public class BlogController extends Controller {
      });
     }
 */
-        CompletionStage<?> completionStage=mongoHandler.deleteManyDocuments(collection, eq("name", "ttthfh"));
+        /*CompletionStage<?> completionStage=mongoHandler.deleteManyDocuments(collection, eq("name", "ttthfh"));
         return CompletableFuture.supplyAsync(() ->{
             try{
                 return ((CompletableFuture)completionStage).get();
@@ -125,8 +128,9 @@ public class BlogController extends Controller {
             else
                 return ok("raj");
         });
+        */
     }
 
 
 
-}
+

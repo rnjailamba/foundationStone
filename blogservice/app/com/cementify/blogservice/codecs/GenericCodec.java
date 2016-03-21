@@ -50,14 +50,14 @@ public interface GenericCodec {
 
     default void writeValue(final BsonWriter writer, final EncoderContext encoderContext, final Object value,
                             String documentName) {
-        if(documentName !=null)
+        if(value==null)
+            return;
+        if(documentName !=null )
             writer.writeName(documentName);
          if (value instanceof String) {
             writer.writeString((String) value);
         } else if (value instanceof Boolean) {
             writer.writeBoolean((Boolean) value);
-        } else if (value == null) {
-                writer.writeNull();
         } else if (Iterable.class.isAssignableFrom(value.getClass())) {
             writeArrayDocument(writer, (Iterable<Object>) value, encoderContext.getChildContext());
         } else if (value instanceof Integer) {
