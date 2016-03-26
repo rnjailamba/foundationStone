@@ -1,7 +1,13 @@
 package com.cementify.blogservice.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.cementify.blogservice.customannotations.EnclosedGenericClass;
+import com.cementify.blogservice.customannotations.FieldName;
+import com.cementify.blogservice.customannotations.Id;
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWrapper;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 import java.util.List;
@@ -9,43 +15,56 @@ import java.util.List;
 /**
  * Created by roshan on 12/03/16.
  */
-public class Blog  {
+public class Blog implements Bson {
 
-    @JsonProperty("_id")
-    private String blogId;
+    @Id(value = "_id")
+    private ObjectId blogId;
 
-    @JsonProperty("posted_by")
+    @FieldName(value = "posted_by")
     private Integer postedBy;
 
-    @JsonProperty("created_time")
+    @FieldName(value = "created_time")
     private Date createdDate;
 
-    @JsonProperty("modified_time")
+    @FieldName(value = "modified_time")
     private Date  modifiedDate;
 
-    @JsonProperty("category_id")
+    @FieldName(value = "category_id")
     private String categoryId;
 
-    @JsonProperty("tags")
+    @FieldName(value = "tags")
     private List<String> tags;
 
-    @JsonProperty("no_of_view")
+    @FieldName(value = "no_of_view")
     private Integer noOfView;
 
-    @JsonProperty("likes")
+    @FieldName(value = "likes")
     private List<Integer> likeUserList;
 
-    @JsonProperty("paragraphs")
+    @EnclosedGenericClass(value = Paragraph.class)
+    @FieldName(value = "paragraphs")
     private List<Paragraph> paragraphs;
 
-    @JsonProperty("is_verified")
-    private Boolean isverified;
+    @FieldName(value = "is_verified")
+    private Boolean isVerified;
 
-    public String getBlogId() {
+    @FieldName(value = "no_of_comments_collection")
+    private Integer noOfCommentsCollections;
+
+
+    public ObjectId generateId() {
+        if (this.blogId == null) {
+            blogId = new ObjectId();
+        }
         return blogId;
     }
 
-    public void setBlogId(String blogId) {
+
+    public ObjectId getBlogId() {
+        return blogId;
+    }
+
+    public void setBlogId(ObjectId blogId) {
         this.blogId = blogId;
     }
 
@@ -113,12 +132,12 @@ public class Blog  {
         this.paragraphs = paragraphs;
     }
 
-    public Boolean getIsverified() {
-        return isverified;
+    public Boolean getIsVerified() {
+        return isVerified;
     }
 
-    public void setIsverified(Boolean isverified) {
-        this.isverified = isverified;
+    public void setIsVerified(Boolean isverified) {
+        this.isVerified = isverified;
     }
 
     public Integer getNoOfCommentsCollections() {
@@ -129,9 +148,11 @@ public class Blog  {
         this.noOfCommentsCollections = noOfCommentsCollections;
     }
 
-    @JsonProperty("no_of_comments_collection")
-    private Integer noOfCommentsCollections;
 
+    @Override
+    public <TDocument> BsonDocument toBsonDocument(Class<TDocument> aClass, CodecRegistry codecRegistry) {
+        return new BsonDocumentWrapper<Blog>(this, codecRegistry.get(Blog.class));
+    }
 
 
 }

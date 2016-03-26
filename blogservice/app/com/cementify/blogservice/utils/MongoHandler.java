@@ -1,7 +1,5 @@
 package com.cementify.blogservice.utils;
 
-import com.cementify.blogservice.models.User;
-import com.google.inject.Singleton;
 import com.mongodb.Block;
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
@@ -15,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import static com.mongodb.client.model.Filters.*;
 
 /**
  * Created by roshan on 19/03/16.

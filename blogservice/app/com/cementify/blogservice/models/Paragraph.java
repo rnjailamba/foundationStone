@@ -1,35 +1,49 @@
 package com.cementify.blogservice.models;
 
-import com.cementify.blogservice.utils.ParagraphType;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.cementify.blogservice.customannotations.EnclosedGenericClass;
+import com.cementify.blogservice.customannotations.FieldName;
+
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWrapper;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.conversions.Bson;
 
 import java.util.List;
 
 /**
  * Created by roshan on 12/03/16.
  */
-public class Paragraph {
+public class Paragraph implements Bson{
 
-    @JsonProperty("img_urls")
-    private List<String> ImgUrls;
+    @EnclosedGenericClass(value = ImageObject.class)
+    @FieldName(value = "image_list")
+    private List<ImageObject> ImgageList;
 
-    @JsonProperty("video_urls")
-    private List<String> videoUrls;
+    @EnclosedGenericClass(value = VideoObject.class)
+    @FieldName(value = "video_list")
+    private List<VideoObject> videoList;
 
-    public List<String> getImgUrls() {
-        return ImgUrls;
+    @FieldName(value = "text")
+    private String text;
+
+    @FieldName(value = "paragraph_type")
+    private ParagraphType paragraphType;
+
+
+    public List<VideoObject> getVideoList() {
+        return videoList;
     }
 
-    public void setImgUrls(List<String> imgUrls) {
-        ImgUrls = imgUrls;
+    public List<ImageObject> getImgageList() {
+        return ImgageList;
     }
 
-    public List<String> getVideoUrls() {
-        return videoUrls;
+    public void setImgageList(List<ImageObject> imgageList) {
+        ImgageList = imgageList;
     }
 
-    public void setVideoUrls(List<String> videoUrls) {
-        this.videoUrls = videoUrls;
+    public void setVideoList(List<VideoObject> videoList) {
+        this.videoList = videoList;
     }
 
     public String getText() {
@@ -48,9 +62,8 @@ public class Paragraph {
         this.paragraphType = paragraphType;
     }
 
-    @JsonProperty("text")
-    private String text;
-
-    @JsonProperty("type")
-    private ParagraphType paragraphType;
+    @Override
+    public <TDocument> BsonDocument toBsonDocument(Class<TDocument> aClass, CodecRegistry codecRegistry) {
+        return new BsonDocumentWrapper<Paragraph>(this, codecRegistry.get(Paragraph.class));
+    }
 }

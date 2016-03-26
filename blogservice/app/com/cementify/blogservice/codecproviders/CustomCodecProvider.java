@@ -1,9 +1,9 @@
 package com.cementify.blogservice.codecproviders;
 
-import com.cementify.blogservice.codecs.AddressCodec;
-import com.cementify.blogservice.codecs.UserCodec;
-import com.cementify.blogservice.models.Address;
-import com.cementify.blogservice.models.User;
+import com.cementify.blogservice.codecs.*;
+
+
+import com.cementify.blogservice.models.*;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -17,11 +17,25 @@ public class CustomCodecProvider implements CodecProvider {
 
     @Override
     public <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
-        if(clazz==User.class){
-            return (Codec<T>) new UserCodec(registry);
-        }else if(clazz== Address.class){
-            return (Codec<T>) new AddressCodec(registry);
+        if(clazz==Blog.class){
+            return (Codec<T>) new BlogCodec(registry);
+        }else if(clazz== PostedBy.class){
+            return (Codec<T>) new PostedByCodec(registry);
+        }else if(clazz== Paragraph.class) {
+            return (Codec<T>) new ParagraphCodec(registry);
+        }else if(clazz== Comment.class) {
+            return (Codec<T>) new CommentCodec(registry);
+        }else if(clazz== CommentCollection.class) {
+            return (Codec<T>) new CommentCollectionCodec(registry);
+        }else if(clazz== ParagraphType.class) {
+            return (Codec<T>) new ParagraphTypeCodec(registry);
+        }else if(clazz== ImageObject.class) {
+            return (Codec<T>) new ImageObjectCodec(registry);
+        }else if(clazz== VideoObject.class) {
+            return (Codec<T>) new VideoObjectCodec(registry);
         }
         return  null;
     }
+
+
 }

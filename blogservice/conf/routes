@@ -3,8 +3,10 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET           /blogService/ping                                   com.cementify.blogservice.controllers.BlogController.ping()
+GET           /blogService/ping                                         com.cementify.blogservice.controllers.BlogController.ping()
 
-GET           /blogService/test                                   com.cementify.blogservice.controllers.BlogController.test()
+POST           /blogService/createBlog                                   com.cementify.blogservice.controllers.BlogController.createBlog()
+POST           /blogService/readBlogs                                   com.cementify.blogservice.controllers.BlogController.readBlogs()
+
 
 

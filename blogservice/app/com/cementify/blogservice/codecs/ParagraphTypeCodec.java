@@ -1,7 +1,6 @@
 package com.cementify.blogservice.codecs;
 
 
-import com.cementify.blogservice.models.Paragraph;
 import com.cementify.blogservice.models.ParagraphType;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
@@ -13,7 +12,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 /**
  * Created by roshan on 19/03/16.
  */
-public class ParagraphTypeCodec implements Codec<ParagraphType>,GenericCodec {
+public class ParagraphTypeCodec implements Codec<ParagraphType> {
     private CodecRegistry codecRegistry;
 
     public CodecRegistry getCodecRegistry() {
@@ -26,14 +25,17 @@ public class ParagraphTypeCodec implements Codec<ParagraphType>,GenericCodec {
 
     @Override
     public void encode(BsonWriter writer, ParagraphType value, EncoderContext encoderContext) {
-        writeDocument(writer,value,encoderContext);
+        writer.writeStartDocument();
+        writer.writeString("type",value.toString());
+        writer.writeEndDocument();
     }
 
 
     @Override
     public ParagraphType decode(BsonReader reader, DecoderContext decoderContext) {
-        ParagraphType paragraphType =null;
-        paragraphType = (ParagraphType) readDocument(reader, decoderContext, paragraphType);
+        reader.readStartDocument();
+        ParagraphType paragraphType =ParagraphType.valueOf(reader.readString("type"));
+        reader.readEndDocument();
         return paragraphType;
     }
 

@@ -54,7 +54,7 @@ public interface GenericCodec {
             return;
         if(documentName !=null )
             writer.writeName(documentName);
-         if (value instanceof String) {
+         if (value instanceof String ) {
             writer.writeString((String) value);
         } else if (value instanceof Boolean) {
             writer.writeBoolean((Boolean) value);
@@ -68,7 +68,7 @@ public interface GenericCodec {
             writer.writeObjectId((ObjectId) value);
         } else if (value instanceof Date) {
             writer.writeDateTime(((Date) value).getTime());
-        } else {
+        }else {
             Codec codec = getCodecRegistry().get(value.getClass());
             encoderContext.encodeWithChildContext(codec, writer, value);
         }
@@ -128,6 +128,7 @@ public interface GenericCodec {
             case NULL:
                 reader.readNull();
                 return null;
+
         }
         reader.skipValue();
         return null;

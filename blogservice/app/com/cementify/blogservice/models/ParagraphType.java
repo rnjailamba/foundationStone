@@ -8,6 +8,7 @@ import com.cementify.blogservice.customannotations.FieldName;
 public enum ParagraphType {
     Text("Text"),Image("Image"),Video("Video");
 
+    @FieldName(value = "type")
     private String type;
 
     ParagraphType(String type) {
@@ -18,5 +19,8 @@ public enum ParagraphType {
         return type;
     }
 
-
+    @Override
+    public String toString() {
+        return type;
+    }
 }
