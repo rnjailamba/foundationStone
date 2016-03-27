@@ -93,7 +93,6 @@ public class Customer {
     private Date birthday;
 
 
-
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
     }

@@ -12,12 +12,13 @@ public class BlogResponse {
 
     private String blogId;
 
+    private Integer customerId;
 
-    private Integer postedBy;
+    private String email;
 
+    private String birthday;
 
     private String createdDate;
-
 
     private String categoryId;
 
@@ -55,13 +56,6 @@ public class BlogResponse {
         this.blogId = blogId;
     }
 
-    public Integer getPostedBy() {
-        return postedBy;
-    }
-
-    public void setPostedBy(Integer postedBy) {
-        this.postedBy = postedBy;
-    }
 
     public String getCreatedDate() {
         return createdDate;
@@ -117,5 +111,29 @@ public class BlogResponse {
 
     public void setNoOfCommentsCollections(Integer noOfCommentsCollections) {
         this.noOfCommentsCollections = noOfCommentsCollections;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 }

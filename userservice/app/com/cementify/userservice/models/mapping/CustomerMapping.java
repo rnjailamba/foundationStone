@@ -4,7 +4,11 @@ import com.cementify.userservice.models.Customer;
 import com.cementify.userservice.models.CustomerDevice;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.response.CustomerResponse;
+import com.cementify.userservice.models.response.CustomerResponseWithDescription;
 import com.cementify.userservice.models.response.CustomerResponseWithSocialAccount;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by roshan on 31/01/16.
@@ -17,6 +21,32 @@ public class CustomerMapping {
 
         return getCustomerResponse(customer, customerResponse);
 
+    }
+
+    public static List<CustomerResponseWithDescription> getCustomerResponseWithDescriptionList(List<Customer> customers)
+    {
+        List<CustomerResponseWithDescription> customersResponseWithDescription =new ArrayList<>();
+        if(customers == null)
+              return null;
+        return getCustomerResponseWithDescriptionList(customers, customersResponseWithDescription);
+
+    }
+
+    public static List<CustomerResponseWithDescription> getCustomerResponseWithDescriptionList(
+            List<Customer> customers,List<CustomerResponseWithDescription> customersResponseWithDescription)
+    {
+        if(customers ==null){
+            return customersResponseWithDescription;
+        }
+        for(Customer customer :customers){
+            CustomerResponseWithDescription customerResponseWithDescription =new CustomerResponseWithDescription();
+            customerResponseWithDescription.setCustomerId(customer.getCustomerId());
+            customerResponseWithDescription.setEmail(customer.getEmail());
+            customerResponseWithDescription.setIsVerified(customer.getIsVerified());
+            customerResponseWithDescription.setBirthday(customer.getBirthday());
+            customersResponseWithDescription.add(customerResponseWithDescription);
+        }
+        return customersResponseWithDescription;
     }
 
     public static CustomerResponse getCustomerResponse(Customer customer,CustomerResponse customerResponse)

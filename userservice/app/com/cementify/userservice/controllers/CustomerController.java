@@ -8,6 +8,7 @@ import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.mapping.CustomerMapping;
 import com.cementify.userservice.models.request.*;
 import com.cementify.userservice.models.response.CustomerResponse;
+import com.cementify.userservice.models.response.CustomerResponseWithDescription;
 import com.cementify.userservice.services.CustomerService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
@@ -19,6 +20,9 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -57,6 +61,21 @@ public class CustomerController extends Controller {
 		CustomerResponse customerResponse = CustomerMapping
 				.getCustomerResponse(customer);
 		return ok(Json.toJson(customerResponse));
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result findCustomerByCustomerIds() {
+		JsonNode jsonNode=request().body().asJson();
+		CustomerFindRequestByIds customerFindRequestByIds =Json.fromJson(jsonNode,CustomerFindRequestByIds.class);
+		List<Integer> customerIds = customerFindRequestByIds.getCustomerIds();
+		List<Customer> customers = customerService.findCustomerByCustomerIds(customerIds);
+		if (customers == null) {
+			return notFound();
+		}
+		List<CustomerResponseWithDescription> customersResponse = CustomerMapping
+				.getCustomerResponseWithDescriptionList(customers);
+		return ok(Json.toJson(customersResponse));
 	}
 
 	@Transactional(value = "customerdb")

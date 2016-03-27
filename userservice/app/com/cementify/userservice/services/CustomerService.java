@@ -26,6 +26,7 @@ public interface CustomerService {
     Customer findByFbId(String fbId);
     Customer findByEmail(String email);
     Customer findCustomerByCustomerId(int customerId);
+    List<Customer> findCustomerByCustomerIds(List<Integer> customerIds);
     Customer createCustomer(CustomerDataRequest customerRequest);
     void removeRuid(CustomerRequest customerRequest);
     CustomerDevice findByRuid(String ruid);

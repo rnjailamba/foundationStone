@@ -28,7 +28,7 @@ public class BlogMapping {
          blogResponse.setNoOfCommentsCollections(blog.getNoOfCommentsCollections());
          blogResponse.setNoOfView(blog.getNoOfView());
          blogResponse.setParagraphs(blog.getParagraphs());
-         blogResponse.setPostedBy(blog.getPostedBy());
+         blogResponse.setCustomerId(blog.getPostedBy());
          blogResponse.setTags(blog.getTags());
          return blogResponse;
     }

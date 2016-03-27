@@ -234,6 +234,24 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
+    public List<Customer> findCustomerByCustomerIds(List<Integer> customerIds) {
+
+        Query query = JPA.em().createQuery("select c from Customer c where c.customerId in (:customerIds)");
+        query.setParameter("customerIds", customerIds);
+        List resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer with "
+                    + customerIds + " not found.");
+        }
+        List<Customer> customerList =new ArrayList<>();
+        for(int i=0;i<resultList.size();i++){
+            Customer customer=(Customer) resultList.get(i);
+            customerList.add(customer);
+        }
+        return customerList;
+    }
+
+    @Override
     public void removeRuid(CustomerRequest customerRequest) {
         CustomerDevice customerDevice=findByRuid(customerRequest.getRuid());
         if (customerRequest.getCustomerId().equals(customerDevice.getCustomer().getCustomerId())){
