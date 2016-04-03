@@ -17,7 +17,7 @@ public class Paragraph implements Bson{
 
     @EnclosedGenericClass(value = ImageObject.class)
     @FieldName(value = "image_list")
-    private List<ImageObject> ImgageList;
+    private List<ImageObject> imageList;
 
     @EnclosedGenericClass(value = VideoObject.class)
     @FieldName(value = "video_list")
@@ -34,12 +34,12 @@ public class Paragraph implements Bson{
         return videoList;
     }
 
-    public List<ImageObject> getImgageList() {
-        return ImgageList;
+    public List<ImageObject> getImageList() {
+        return imageList;
     }
 
-    public void setImgageList(List<ImageObject> imgageList) {
-        ImgageList = imgageList;
+    public void setImageList(List<ImageObject> imageList) {
+        this.imageList = imageList;
     }
 
     public void setVideoList(List<VideoObject> videoList) {

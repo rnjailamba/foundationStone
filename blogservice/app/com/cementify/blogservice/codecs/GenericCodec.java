@@ -152,7 +152,7 @@ public interface GenericCodec {
 
     default void beforeFields(final BsonWriter bsonWriter, final EncoderContext encoderContext,
                               final IdData idData,Object value) {
-         if (encoderContext.isEncodingCollectibleDocument() && idData.getDocumentIdName()!=null) {
+         if (idData.getDocumentIdName()!=null) {
              Object object = InvokeGetterSetter.invokeGetter(value, idData.getFieldIdName());
             writeValue(bsonWriter, encoderContext, object,idData.getDocumentIdName());
             }

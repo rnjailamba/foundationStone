@@ -240,6 +240,31 @@ public class MongoHandler<T> {
         return singleResultCallback;
     }
 
+    public CompletionStage<?> findOneDocumentWithProjection(MongoCollection<T> collection,Bson filters ,Bson projection){
+        CompletionStage<T> completionStage=new CompletableFuture<>();
+        if(filters==null)
+            collection.find().projection(projection).first(getSingleFindResultCallBackWithProjection(completionStage));
+        else
+            collection.find(filters).projection(projection).first(getSingleFindResultCallBackWithProjection(completionStage));
+        return completionStage;
+    }
 
+
+    public SingleResultCallback<T> getSingleFindResultCallBackWithProjection(CompletionStage<T> completionStage){
+        SingleResultCallback<T> singleResultCallback=new SingleResultCallback<T>() {
+            @Override
+            public void onResult(T o, Throwable throwable) {
+                if(throwable!=null){
+                    Logger.error("Object not fetched due to error " +throwable.getMessage());
+                    ((CompletableFuture)completionStage).completeExceptionally(throwable);
+                }else {
+                    Logger.info("Object fetched is " + o);
+                    ((CompletableFuture) completionStage).complete(o);
+                }
+
+            }
+        };
+        return singleResultCallback;
+    }
 
 }

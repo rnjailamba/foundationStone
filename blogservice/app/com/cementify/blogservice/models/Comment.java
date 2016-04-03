@@ -9,6 +9,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,14 +17,14 @@ import java.util.List;
  */
 public class Comment implements Bson{
 
-    @Id(value = "_id")
+    @Id(value = "comment_id")
     private ObjectId commentId;
 
     @FieldName(value = "posted_by")
     private PostedBy postedBy;
 
     @FieldName(value = "time")
-    private DateTime dateTime;
+    private Date postedTime;
 
     @FieldName(value = "comment_content")
     private Paragraph commentContent;
@@ -59,12 +60,12 @@ public class Comment implements Bson{
         this.postedBy = postedBy;
     }
 
-    public DateTime getDateTime() {
-        return dateTime;
+    public Date getPostedTime() {
+        return postedTime;
     }
 
-    public void setDateTime(DateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setPostedTime(Date postedTime) {
+        this.postedTime = postedTime;
     }
 
     public Paragraph getCommentContent() {

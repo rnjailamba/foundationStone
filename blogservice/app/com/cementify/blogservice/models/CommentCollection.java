@@ -21,23 +21,34 @@ public class CommentCollection implements Bson{
     private ObjectId commentCollectionId;
 
     @FieldName(value = "parent_id")
-    private String parentId;
+    private ObjectId parentId;
 
     @FieldName(value = "blog_id")
-    private String blogId;
+    private ObjectId blogId;
 
-    @FieldName(value = "no_of_comments")
-    private Integer noOfComments;
+    @FieldName(value = "total_comments")
+    private Integer totalComments;
 
     @EnclosedGenericClass(value = Comment.class)
     @FieldName(value = "comments")
     List<Comment> comments;
+
+    @FieldName(value = "collection_no")
+    private Integer collectionNo;
 
     public ObjectId generateId() {
         if (this.commentCollectionId == null) {
             commentCollectionId = new ObjectId();
         }
         return commentCollectionId;
+    }
+
+    public Integer getCollectionNo() {
+        return collectionNo;
+    }
+
+    public void setCollectionNo(Integer collectionNo) {
+        this.collectionNo = collectionNo;
     }
 
     public ObjectId getCommentCollectionId() {
@@ -48,29 +59,30 @@ public class CommentCollection implements Bson{
         this.commentCollectionId = commentCollectionId;
     }
 
-    public String getParentId() {
+    public ObjectId getParentId() {
         return parentId;
     }
 
-    public void setParentId(String parentId) {
+    public void setParentId(ObjectId parentId) {
         this.parentId = parentId;
     }
 
-    public String getBlogId() {
+    public ObjectId getBlogId() {
         return blogId;
     }
 
-    public void setBlogId(String blogId) {
+    public Integer getTotalComments() {
+        return totalComments;
+    }
+
+    public void setTotalComments(Integer totalComments) {
+        this.totalComments = totalComments;
+    }
+
+    public void setBlogId(ObjectId blogId) {
         this.blogId = blogId;
     }
 
-    public Integer getNoOfComments() {
-        return noOfComments;
-    }
-
-    public void setNoOfComments(Integer noOfComments) {
-        this.noOfComments = noOfComments;
-    }
 
     public List<Comment> getComments() {
         return comments;
