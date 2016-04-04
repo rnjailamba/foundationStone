@@ -30,6 +30,8 @@ public class BlogMapping {
          blogResponse.setParagraphs(blog.getParagraphs());
          blogResponse.setCustomerId(blog.getPostedBy());
          blogResponse.setTags(blog.getTags());
+         blogResponse.setTitle(blog.getTitle());
+         blogResponse.setSubCategoryId(blog.getSubCategoryId());
          return blogResponse;
     }
 }

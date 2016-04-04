@@ -11,7 +11,11 @@ POST           /blogService/updateBlog                                     com.c
 POST           /blogService/updateBlogs                                    com.cementify.blogservice.controllers.BlogController.updateBlogs()
 POST           /blogService/addComment                                     com.cementify.blogservice.controllers.BlogController.addComment()
 POST           /blogService/addReplyComment                                com.cementify.blogservice.controllers.BlogController.addReplyComment()
-
-
+POST           /blogService/likeBlog                                       com.cementify.blogservice.controllers.BlogController.likeBlog()
+POST           /blogService/unlikeBlog                                     com.cementify.blogservice.controllers.BlogController.unlikeBlog()
+POST           /blogService/likeComment                                    com.cementify.blogservice.controllers.BlogController.likeComment()
+POST           /blogService/unlikeComment                                  com.cementify.blogservice.controllers.BlogController.unlikeComment()
+POST           /blogService/updateComment                                   com.cementify.blogservice.controllers.BlogController.updateComment()
+POST           /blogService/deleteComment                                   com.cementify.blogservice.controllers.BlogController.deleteComment()
 
 

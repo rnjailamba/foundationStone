@@ -10,6 +10,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +36,12 @@ public class CommentCollection implements Bson{
 
     @FieldName(value = "collection_no")
     private Integer collectionNo;
+
+    @FieldName(value = "created_time")
+    private Date createdDate;
+
+    @FieldName(value = "modified_time")
+    private Date  modifiedDate;
 
     public ObjectId generateId() {
         if (this.commentCollectionId == null) {
@@ -90,6 +97,22 @@ public class CommentCollection implements Bson{
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 
     @Override

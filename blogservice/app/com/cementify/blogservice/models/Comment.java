@@ -23,8 +23,11 @@ public class Comment implements Bson{
     @FieldName(value = "posted_by")
     private PostedBy postedBy;
 
-    @FieldName(value = "time")
-    private Date postedTime;
+    @FieldName(value = "created_time")
+    private Date createdDate;
+
+    @FieldName(value = "modified_time")
+    private Date  modifiedDate;
 
     @FieldName(value = "comment_content")
     private Paragraph commentContent;
@@ -35,6 +38,8 @@ public class Comment implements Bson{
     @FieldName(value = "no_of_reply_comments_collection")
     private Integer noOfReplyCommentsCollections;
 
+    @FieldName(value = "soft_delete")
+    private Boolean  softDelete;
 
     public ObjectId generateId() {
         if (this.commentId == null) {
@@ -60,12 +65,20 @@ public class Comment implements Bson{
         this.postedBy = postedBy;
     }
 
-    public Date getPostedTime() {
-        return postedTime;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setPostedTime(Date postedTime) {
-        this.postedTime = postedTime;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 
     public Paragraph getCommentContent() {
@@ -90,6 +103,14 @@ public class Comment implements Bson{
 
     public void setNoOfReplyCommentsCollections(Integer noOfReplyCommentsCollections) {
         this.noOfReplyCommentsCollections = noOfReplyCommentsCollections;
+    }
+
+    public Boolean getSoftDelete() {
+        return softDelete;
+    }
+
+    public void setSoftDelete(Boolean softDelete) {
+        this.softDelete = softDelete;
     }
 
     @Override

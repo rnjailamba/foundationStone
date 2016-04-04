@@ -5,8 +5,7 @@ import com.cementify.blogservice.models.Blog;
 import com.cementify.blogservice.models.Comment;
 import com.cementify.blogservice.models.CommentCollection;
 import com.cementify.blogservice.models.mapping.BlogMapping;
-import com.cementify.blogservice.models.request.BlogUpdateRequest;
-import com.cementify.blogservice.models.request.CommentRequest;
+import com.cementify.blogservice.models.request.*;
 import com.cementify.blogservice.models.response.BlogResponse;
 import com.cementify.blogservice.utils.MongoClientInstance;
 import com.cementify.blogservice.utils.MongoHandler;
@@ -280,7 +279,8 @@ public class BlogController extends Controller {
             comment.generateId();
             comment.setNoOfReplyCommentsCollections(0);
             Date date=new Date();
-            comment.setPostedTime(date);
+            comment.setCreatedDate(date);
+            comment.setModifiedDate(date);
             if (commentCollectionResponse == null ||
                     commentCollectionResponse.getTotalComments() > 10) {
                 CommentCollection newCommentCollection = new CommentCollection();
@@ -288,6 +288,8 @@ public class BlogController extends Controller {
                 newCommentCollection.setComments(Arrays.asList(comment));
                 newCommentCollection.setBlogId(commentRequest.getBlogId());
                 newCommentCollection.setParentId(commentRequest.getBlogId());
+                newCommentCollection.setCreatedDate(date);
+                newCommentCollection.setModifiedDate(date);
                 if(commentCollectionResponse == null){
                     newCommentCollection.setCollectionNo(1);
                 }else{
@@ -371,7 +373,8 @@ public class BlogController extends Controller {
             comment.generateId();
             comment.setNoOfReplyCommentsCollections(0);
             Date date = new Date();
-            comment.setPostedTime(date);
+            comment.setModifiedDate(date);
+            comment.setCreatedDate(date);
             if (commentCollectionResponse == null ||
                     commentCollectionResponse.getTotalComments() > 10) {
                 CommentCollection newCommentCollection = new CommentCollection();
@@ -379,6 +382,8 @@ public class BlogController extends Controller {
                 newCommentCollection.setComments(Arrays.asList(comment));
                 newCommentCollection.setBlogId(commentRequest.getBlogId());
                 newCommentCollection.setParentId(commentRequest.getParentId());
+                newCommentCollection.setCreatedDate(date);
+                newCommentCollection.setModifiedDate(date);
                 if (commentCollectionResponse == null) {
                     newCommentCollection.setCollectionNo(1);
                 } else {
@@ -410,8 +415,199 @@ public class BlogController extends Controller {
             return status(200, "Comment Added Sucessfully");
         });
 
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> likeBlog() {
+        Form<LikeBlogRequest> likeBlogRequestForm = formFactory.form(LikeBlogRequest.class);
+        likeBlogRequestForm = likeBlogRequestForm.bindFromRequest();
+        if (likeBlogRequestForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        LikeBlogRequest likeBlogRequest = likeBlogRequestForm.get();
+        MongoHandler<Blog> blogMongoHandler = new MongoHandler<>();
+        MongoCollection<Blog> blogCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("blog_collection", Blog.class);
+        return CompletableFuture.supplyAsync(() ->{
+            CompletionStage<?> completionStage = blogMongoHandler.updateOneDocuments(blogCollection,
+                    eq("_id", likeBlogRequest.getBlogId()),
+                    new Document("$push", new Document("likes", likeBlogRequest.getUserId())));
+            try {
+                return ((CompletableFuture) completionStage).get();
+            } catch (Exception e) {
+                Logger.error("Exception raised during adding comment to blogId " + likeBlogRequest.getBlogId() + " is " + e);
+                return null;
+            }
+            }).thenApply(result -> {
+            return status(200,"Liked Blog");
+        });
 
     }
+
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> unlikeBlog() {
+        Form<LikeBlogRequest> likeBlogRequestForm = formFactory.form(LikeBlogRequest.class);
+        likeBlogRequestForm = likeBlogRequestForm.bindFromRequest();
+        if (likeBlogRequestForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        LikeBlogRequest likeBlogRequest = likeBlogRequestForm.get();
+        MongoHandler<Blog> blogMongoHandler = new MongoHandler<>();
+        MongoCollection<Blog> blogCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("blog_collection", Blog.class);
+        return CompletableFuture.supplyAsync(() ->{
+            CompletionStage<?> completionStage = blogMongoHandler.updateOneDocuments(blogCollection,
+                    eq("_id", likeBlogRequest.getBlogId()),
+                    new Document("$pull", new Document("likes", likeBlogRequest.getUserId())));
+            try {
+                return ((CompletableFuture) completionStage).get();
+            } catch (Exception e) {
+                Logger.error("Exception raised during adding comment to blogId " + likeBlogRequest.getBlogId() + " is " + e);
+                return null;
+            }
+        }).thenApply(result -> {
+            return status(200,"UnLiked Blog");
+        });
+
+    }
+
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> likeComment() {
+        Form<LikeCommentRequest> likeCommentRequestForm = formFactory.form(LikeCommentRequest.class);
+        likeCommentRequestForm = likeCommentRequestForm.bindFromRequest();
+        if (likeCommentRequestForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        LikeCommentRequest likeCommentRequest = likeCommentRequestForm.get();
+        MongoCollection<CommentCollection> commentCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("comment_collection", CommentCollection.class);
+        MongoHandler<CommentCollection> commentMongoHandler = new MongoHandler<>();
+        return CompletableFuture.supplyAsync(() ->{
+            CompletionStage<?> completionStage = commentMongoHandler.updateOneDocuments(commentCollection,
+                    and(eq("blog_id", likeCommentRequest.getBlogId()), eq("comments.comment_id", likeCommentRequest.getCommentId())),
+                    new Document("$push", new Document("comments.$.likes", likeCommentRequest.getUserId())));
+            try {
+                return ((CompletableFuture) completionStage).get();
+            } catch (Exception e) {
+                Logger.error("Exception raised during adding comment to blogId " + likeCommentRequest.getBlogId() + " is " + e);
+                return null;
+            }
+        }).thenApply(result -> {
+            return status(200,"Liked Comment");
+        });
+
+    }
+
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> unlikeComment() {
+        Form<LikeCommentRequest> likeCommentRequestForm = formFactory.form(LikeCommentRequest.class);
+        likeCommentRequestForm = likeCommentRequestForm.bindFromRequest();
+        if (likeCommentRequestForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        LikeCommentRequest likeCommentRequest = likeCommentRequestForm.get();
+        MongoCollection<CommentCollection> commentCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("comment_collection", CommentCollection.class);
+        MongoHandler<CommentCollection> commentMongoHandler = new MongoHandler<>();
+        return CompletableFuture.supplyAsync(() ->{
+            CompletionStage<?> completionStage = commentMongoHandler.updateOneDocuments(commentCollection,
+                    and(eq("blog_id", likeCommentRequest.getBlogId()), eq("comments.comment_id", likeCommentRequest.getCommentId())),
+                    new Document("$pull", new Document("comments.$.likes", likeCommentRequest.getUserId())));
+            try {
+                return ((CompletableFuture) completionStage).get();
+            } catch (Exception e) {
+                Logger.error("Exception raised during adding comment to blogId " + likeCommentRequest.getBlogId() + " is " + e);
+                return null;
+            }
+        }).thenApply(result -> {
+            return status(200,"Unliked Comment");
+        });
+
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> updateComment(){
+        Form<UpdateCommentRequest> updateCommentForm = formFactory.form(UpdateCommentRequest.class);
+        updateCommentForm = updateCommentForm.bindFromRequest();
+        if (updateCommentForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        UpdateCommentRequest updateCommentRequest = updateCommentForm.get();
+        MongoCollection<CommentCollection> commentCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("comment_collection", CommentCollection.class);
+        MongoHandler<CommentCollection> commentMongoHandler = new MongoHandler<>();
+        return CompletableFuture.supplyAsync(() ->{
+            Comment updateComment =updateCommentRequest.getComment();
+            Date date=new Date();
+            updateComment.setModifiedDate(date);
+            CompletionStage<?> completionStage = commentMongoHandler.updateManyDocuments(
+                    commentCollection,and(eq("blog_id", updateCommentRequest.getBlogId()),
+                            eq("comments.comment_id", updateCommentRequest.getComment().getCommentId())),
+                            new Document("$set", new Document("comments.$",updateComment)));
+            try{
+                return ((CompletableFuture)completionStage).get();
+            }catch (Exception e){
+                Logger.error("Exception raised during updating Comment to MongoDb "+e);
+                return null;
+            }
+        }).thenApply(comments -> {
+            if(comments!=null)
+                return status(200, "Comment Successfully updated");
+            else
+                return status(400, "Bad request");
+        });
+
+    }
+
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> deleteComment(){
+        Form<DeleteCommentRequest> deleteCommentForm = formFactory.form(DeleteCommentRequest.class);
+        deleteCommentForm  = deleteCommentForm.bindFromRequest();
+        if (deleteCommentForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        DeleteCommentRequest deleteCommentRequest = deleteCommentForm.get();
+        MongoCollection<CommentCollection> commentCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("comment_collection", CommentCollection.class);
+        MongoHandler<CommentCollection> commentMongoHandler = new MongoHandler<>();
+        return CompletableFuture.supplyAsync(() ->{
+            Comment deleteComment =new Comment();
+            Date date=new Date();
+            deleteComment.setCommentId(deleteCommentRequest.getCommentId());
+            deleteComment.setModifiedDate(date);
+            deleteComment.setSoftDelete(true);
+            CompletionStage<?> completionStage = commentMongoHandler.updateManyDocuments(
+                    commentCollection,and(eq("blog_id", deleteCommentRequest.getBlogId()),
+                            eq("comments.comment_id", deleteCommentRequest.getCommentId())),
+                    new Document("$set", new Document("comments.$",deleteComment)));
+            try{
+                return ((CompletableFuture)completionStage).get();
+            }catch (Exception e){
+                Logger.error("Exception raised during updating Comment to MongoDb "+e);
+                return null;
+            }
+        }).thenApply(comments -> {
+            if(comments!=null)
+                return status(200, "Comment Deleted Successfully ");
+            else
+                return status(400, "Bad request");
+        });
+
+    }
+
+
+    
+
 
 
     }

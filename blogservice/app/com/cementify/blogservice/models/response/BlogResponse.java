@@ -37,6 +37,10 @@ public class BlogResponse {
 
     private Boolean isVerified;
 
+    private String subCategoryId;
+
+    private String title;
+
 
     private Integer noOfCommentsCollections;
 
@@ -135,5 +139,21 @@ public class BlogResponse {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public String getSubCategoryId() {
+        return subCategoryId;
+    }
+
+    public void setSubCategoryId(String subCategoryId) {
+        this.subCategoryId = subCategoryId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
