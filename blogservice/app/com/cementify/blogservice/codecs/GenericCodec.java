@@ -58,7 +58,9 @@ public interface GenericCodec {
             writer.writeString((String) value);
         } else if (value instanceof Boolean) {
             writer.writeBoolean((Boolean) value);
-        } else if (Iterable.class.isAssignableFrom(value.getClass())) {
+        } else if (value instanceof Double) {
+             writer.writeDouble((Double) value);
+         } else if (Iterable.class.isAssignableFrom(value.getClass())) {
             writeArrayDocument(writer, (Iterable<Object>) value, encoderContext.getChildContext());
         } else if (value instanceof Integer) {
             writer.writeInt32((Integer) value);
@@ -125,6 +127,9 @@ public interface GenericCodec {
             case ARRAY:
                 List<Object> embeddedList = readArrayDocument(reader, decoderContext, fieldData);
                 return embeddedList;
+            case DOUBLE:
+                 Double doubleValue =reader.readDouble();
+                 return  doubleValue;
             case NULL:
                 reader.readNull();
                 return null;
@@ -154,7 +159,7 @@ public interface GenericCodec {
                               final IdData idData,Object value) {
          if (idData.getDocumentIdName()!=null) {
              Object object = InvokeGetterSetter.invokeGetter(value, idData.getFieldIdName());
-            writeValue(bsonWriter, encoderContext, object,idData.getDocumentIdName());
+             writeValue(bsonWriter, encoderContext, object,idData.getDocumentIdName());
             }
         }
 }

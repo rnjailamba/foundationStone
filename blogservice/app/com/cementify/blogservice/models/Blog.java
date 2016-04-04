@@ -32,6 +32,12 @@ public class Blog implements Bson {
     @FieldName(value = "category_id")
     private String categoryId;
 
+    @FieldName(value = "subCategory_id")
+    private String subCategoryId;
+
+    @FieldName(value = "title")
+    private String title;
+
     @FieldName(value = "tags")
     private List<String> tags;
 
@@ -148,6 +154,21 @@ public class Blog implements Bson {
         this.noOfCommentsCollections = noOfCommentsCollections;
     }
 
+    public String getSubCategoryId() {
+        return subCategoryId;
+    }
+
+    public void setSubCategoryId(String subCategoryId) {
+        this.subCategoryId = subCategoryId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Override
     public <TDocument> BsonDocument toBsonDocument(Class<TDocument> aClass, CodecRegistry codecRegistry) {

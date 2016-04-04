@@ -75,6 +75,8 @@ public class BlogController extends Controller {
             Date date=new Date();
             blog.setModifiedDate(date);
             blog.setCreatedDate(date);
+            if(blog.getNoOfCommentsCollections() == null)
+                 blog.setNoOfCommentsCollections(0);
             CompletionStage<?> completionStage=mongoHandler.insertOneDocuments(collection,blog);
             try{
                 return ((CompletableFuture)completionStage).get();
@@ -205,7 +207,7 @@ public class BlogController extends Controller {
             Blog newBlogData=blogUpdateRequest.getNewBlogData();
             Date date=new Date();
             newBlogData.setModifiedDate(date);
-            CompletionStage<?> completionStage=mongoHandler.updateManyDocuments(
+            CompletionStage<?> completionStage = mongoHandler.updateManyDocuments(
                     collection, oldBlogCondition, new Document("$set", newBlogData));
             try{
                 return ((CompletableFuture)completionStage).get();
@@ -239,61 +241,177 @@ public class BlogController extends Controller {
         MongoCollection<Blog> blogCollection =
                 mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
                         getCollection("blog_collection", Blog.class);
-        MongoHandler<Blog> blogMongoHandler=new MongoHandler<>();
+        MongoHandler<Blog> blogMongoHandler = new MongoHandler<>();
         List<String> fields = new ArrayList<>();
         fields.add("no_of_comments_collection");
         Bson projection = Projections.include(fields);
         Blog blog =new Blog();
         blog.setBlogId(commentRequest.getBlogId());
         return CompletableFuture.supplyAsync(() -> {
-            CompletionStage<?> blogCompletionStage = blogMongoHandler.findOneDocumentWithProjection(
-                    blogCollection, blog, projection);
-            try {
-                return ((CompletableFuture) blogCompletionStage).get();
-            } catch (Exception e) {
-                Logger.error("Exception raised during adding comment to blogId " + blog.getBlogId() + " is " + e);
-                return null;
-            }
+                CompletionStage<?> blogCompletionStage = blogMongoHandler.findOneDocumentWithProjection(
+                        blogCollection, blog, projection);
+                try {
+                    return ((CompletableFuture) blogCompletionStage).get();
+                } catch (Exception e) {
+                    Logger.error("Exception raised during adding comment to blogId " + commentRequest.getBlogId() + " is " + e);
+                    return null;
+                }
         }).thenApply(blogCollectionForNoOfCollection -> {
             try {
                 List<String> totalCommentFields = new ArrayList<>();
                 totalCommentFields.add("total_comments");
+                totalCommentFields.add("collection_no");
                 Bson commentsCollectionProjection = Projections.include(totalCommentFields);
-                CommentCollection commentCollection1=new CommentCollection();
-                commentCollection1.setBlogId(commentRequest.getBlogId());
-                commentCollection1.setCollectionNo(((Blog) blogCollectionForNoOfCollection).getNoOfCommentsCollections());
-                CompletionStage<?> commentCompletionStage = commentMongoHandler.readOneDocument(
-                        commentCollection,commentCollection1);
+                int collectionNo = ((Blog) blogCollectionForNoOfCollection).getNoOfCommentsCollections();
+                CommentCollection commentCollectionMongoRequest = new CommentCollection();
+                commentCollectionMongoRequest.setBlogId(commentRequest.getBlogId());
+                commentCollectionMongoRequest.setCollectionNo(collectionNo);
+                commentCollectionMongoRequest.setParentId(commentRequest.getBlogId());
+                CompletionStage<?> commentCompletionStage = commentMongoHandler.findOneDocumentWithProjection(
+                        commentCollection, commentCollectionMongoRequest, commentsCollectionProjection);
                 return ((CompletableFuture) commentCompletionStage).get();
             } catch (Exception e) {
-                // Logger.error("Exception raised during adding comment to blogId " + ((Blog) blogCollectionForNoOfCollection).getBlogId() + " is " + e);
+                Logger.error("Exception raised during adding comment to blogId " + ((Blog) blogCollectionForNoOfCollection).getBlogId() + " is " + e);
                 return null;
             }
         }).thenApply(commentsCollectionForNoOfComment -> {
-            if (((CommentCollection) commentsCollectionForNoOfComment) == null &&
-                    ((CommentCollection) commentsCollectionForNoOfComment).getTotalComments() > 10) {
-                return null;
+            CommentCollection commentCollectionResponse = ((CommentCollection) commentsCollectionForNoOfComment);
+            Comment comment =commentRequest.getComment();
+            comment.generateId();
+            comment.setNoOfReplyCommentsCollections(0);
+            Date date=new Date();
+            comment.setPostedTime(date);
+            if (commentCollectionResponse == null ||
+                    commentCollectionResponse.getTotalComments() > 10) {
+                CommentCollection newCommentCollection = new CommentCollection();
+                newCommentCollection.setTotalComments(1);
+                newCommentCollection.setComments(Arrays.asList(comment));
+                newCommentCollection.setBlogId(commentRequest.getBlogId());
+                newCommentCollection.setParentId(commentRequest.getBlogId());
+                if(commentCollectionResponse == null){
+                    newCommentCollection.setCollectionNo(1);
+                }else{
+                    newCommentCollection.setCollectionNo(commentCollectionResponse.getCollectionNo()+1);
+                }
+                CompletionStage<?> commentCompletionStage = commentMongoHandler.insertOneDocuments(
+                        commentCollection, newCommentCollection);
+                CompletionStage<?> blogCompletionStage =blogMongoHandler.updateOneDocuments(blogCollection, and(eq("_id", commentRequest.getBlogId()),
+                                eq("comments.comment_id", commentRequest.getParentId())),
+                        new Document("$inc", new Document("no_of_comments_collection", 1)));
+                try{
+                    return CompletableFuture.allOf((CompletableFuture)commentCompletionStage,(CompletableFuture)blogCompletionStage);
+                } catch (Exception e) {
+                    Logger.error("Exception raised during adding comment to blogId " + blog.getBlogId() + " is " + e);
+                    return null;
+                }
             } else {
-                Comment comment =commentRequest.getComment();
-                comment.generateId();
-                comment.setNoOfReplyCommentsCollections(0);
-                Date date=new Date();
-                comment.setPostedTime(date);
                 CompletionStage<?> completionStage = commentMongoHandler.updateOneDocuments(commentCollection,
-                        eq("_id", ((CommentCollection) commentsCollectionForNoOfComment).getCommentCollectionId()),
-                        new Document("$push", new Document("comments",comment)).append("$inc",new Document("total_comments",1)));
+                        eq("_id", commentCollectionResponse.getCommentCollectionId()),
+                        new Document("$push", new Document("comments", comment)).append("$inc",new Document("total_comments",1)));
                 try {
                     return ((CompletableFuture) completionStage).get();
                 } catch (Exception e) {
-                    //Logger.error("Exception raised during adding comment to blogId " + blog.getBlogId() + " is " + e);
+                    Logger.error("Exception raised during adding comment to blogId " + blog.getBlogId() + " is " + e);
                     return null;
                 }
             }
-        }).thenApply(result->{
-            return ok("hello");
+        }).thenApply(result -> {
+            return status(200, "Comment Added Sucessfully");
         });
     }
 
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public CompletionStage<Result> addReplyComment() {
+        Form<CommentRequest> commentForm = formFactory.form(CommentRequest.class);
+        commentForm = commentForm.bindFromRequest();
+        if (commentForm.hasErrors()) {
+            return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
+        }
+        CommentRequest commentRequest = commentForm.get();
+        MongoCollection<CommentCollection> commentCollection =
+                mongoClientInstance.getMongoClient().getDatabase("blog_post_database").
+                        getCollection("comment_collection", CommentCollection.class);
+        MongoHandler<CommentCollection> commentMongoHandler = new MongoHandler<>();
+        List<String> fields = new ArrayList<>();
+        fields.add("no_of_reply_comments_collection");
+        Bson projection = Projections.include(fields);
+        return CompletableFuture.supplyAsync(() ->{
+            CompletionStage<?> commentCompletionStage =commentMongoHandler.findOneDocumentWithProjection(commentCollection,and(eq("blog_id",commentRequest.getBlogId()),
+                            eq("comments.comment_id",commentRequest.getParentId())),and(Projections.elemMatch("comments"),projection));
+            try {
+                return ((CompletableFuture) commentCompletionStage).get();
+            } catch (Exception e) {
+                Logger.error("Exception raised during adding comment to blogId " + commentRequest.getBlogId() + " is " + e);
+                return null;
+            }
+        }).thenApply( response ->{
+            CommentCollection commentCollectionResponse =(CommentCollection)response;
+            Comment comment = commentCollectionResponse.getComments().get(0);
+            try {
+                List<String> totalCommentFields = new ArrayList<>();
+                totalCommentFields.add("total_comments");
+                totalCommentFields.add("collection_no");
+                Bson commentsCollectionProjection = Projections.include(totalCommentFields);
+                int collectionNo = comment.getNoOfReplyCommentsCollections();
+                CommentCollection commentCollectionMongoRequest = new CommentCollection();
+                commentCollectionMongoRequest.setBlogId(commentRequest.getBlogId());
+                commentCollectionMongoRequest.setCollectionNo(collectionNo);
+                commentCollectionMongoRequest.setParentId(commentRequest.getParentId());
+                CompletionStage<?> commentCompletionStage = commentMongoHandler.findOneDocumentWithProjection(
+                        commentCollection, commentCollectionMongoRequest, commentsCollectionProjection);
+                return ((CompletableFuture) commentCompletionStage).get();
+            } catch (Exception e) {
+                Logger.error("Exception raised during adding comment to blogId " + commentCollectionResponse.getBlogId() + " is " + e);
+                return null;
+            }
+        }).thenApply(commentsCollectionForNoOfComment -> {
+            CommentCollection commentCollectionResponse = ((CommentCollection) commentsCollectionForNoOfComment);
+            Comment comment = commentRequest.getComment();
+            comment.generateId();
+            comment.setNoOfReplyCommentsCollections(0);
+            Date date = new Date();
+            comment.setPostedTime(date);
+            if (commentCollectionResponse == null ||
+                    commentCollectionResponse.getTotalComments() > 10) {
+                CommentCollection newCommentCollection = new CommentCollection();
+                newCommentCollection.setTotalComments(1);
+                newCommentCollection.setComments(Arrays.asList(comment));
+                newCommentCollection.setBlogId(commentRequest.getBlogId());
+                newCommentCollection.setParentId(commentRequest.getParentId());
+                if (commentCollectionResponse == null) {
+                    newCommentCollection.setCollectionNo(1);
+                } else {
+                    newCommentCollection.setCollectionNo(commentCollectionResponse.getCollectionNo() + 1);
+                }
+                CompletionStage<?> commentCollectionCreateCompletionStage = commentMongoHandler.insertOneDocuments(
+                        commentCollection, newCommentCollection);
+                CompletionStage<?> commentCollectionParentUpdateCompletionStage = commentMongoHandler.updateOneDocuments(commentCollection,
+                        and(eq("blog_id", commentRequest.getBlogId()), eq("comments.comment_id", commentRequest.getParentId())),
+                        new Document("$inc", new Document("comments.$.no_of_reply_comments_collection", 1)));
+                try {
+                    return CompletableFuture.allOf((CompletableFuture) commentCollectionCreateCompletionStage, (CompletableFuture) commentCollectionParentUpdateCompletionStage);
+                } catch (Exception e) {
+                    Logger.error("Exception raised during adding comment to blogId " + commentRequest.getBlogId() + " is " + e);
+                    return null;
+                }
+            } else {
+                CompletionStage<?> completionStage = commentMongoHandler.updateOneDocuments(commentCollection,
+                        eq("_id", commentCollectionResponse.getCommentCollectionId()),
+                        new Document("$push", new Document("comments", comment)).append("$inc", new Document("total_comments", 1)));
+                try {
+                    return ((CompletableFuture) completionStage).get();
+                } catch (Exception e) {
+                    Logger.error("Exception raised during adding comment to blogId " + commentRequest.getBlogId() + " is " + e);
+                    return null;
+                }
+            }
+        }).thenApply(result -> {
+            return status(200, "Comment Added Sucessfully");
+        });
+
+
+    }
 
 
     }

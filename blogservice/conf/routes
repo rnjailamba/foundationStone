@@ -10,6 +10,7 @@ POST           /blogService/readBlogs                                      com.c
 POST           /blogService/updateBlog                                     com.cementify.blogservice.controllers.BlogController.updateBlog()
 POST           /blogService/updateBlogs                                    com.cementify.blogservice.controllers.BlogController.updateBlogs()
 POST           /blogService/addComment                                     com.cementify.blogservice.controllers.BlogController.addComment()
+POST           /blogService/addReplyComment                                com.cementify.blogservice.controllers.BlogController.addReplyComment()
 
 
 
