@@ -4,6 +4,7 @@ import com.mongodb.Block;
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoCollection;
 
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.conversions.Bson;
@@ -151,13 +152,13 @@ public class MongoHandler<T> {
         return singleResultCallback;
     }
 
-    public CompletionStage<?> updateOneDocuments(MongoCollection<T> collection,Bson filters,Bson update){
+    public CompletionStage<?> updateOneDocuments(MongoCollection<T> collection,Bson filters,Bson update,UpdateOptions updateOptions){
         CompletionStage<T> completionStage=new CompletableFuture<>();
-        collection.updateOne(filters,update, getUpdateOneResultCallBack(completionStage, filters, update));
+        collection.updateOne(filters,update,updateOptions, getUpdateOneResultCallBack(completionStage, filters, update,updateOptions));
         return completionStage;
     }
 
-    public SingleResultCallback<UpdateResult> getUpdateOneResultCallBack(CompletionStage<T> completionStage,Bson filters,Bson update){
+    public SingleResultCallback<UpdateResult> getUpdateOneResultCallBack(CompletionStage<T> completionStage,Bson filters,Bson update,UpdateOptions updateOptions){
         SingleResultCallback<UpdateResult> singleResultCallback=new SingleResultCallback<UpdateResult>() {
             @Override
             public void onResult(UpdateResult result, Throwable throwable) {
@@ -174,13 +175,13 @@ public class MongoHandler<T> {
     }
 
 
-    public CompletionStage<?> updateManyDocuments(MongoCollection<T> collection,Bson filters,Bson update){
+    public CompletionStage<?> updateManyDocuments(MongoCollection<T> collection,Bson filters,Bson update,UpdateOptions updateOptions){
         CompletionStage<T> completionStage=new CompletableFuture<>();
-        collection.updateMany(filters, update, getUpdateManyResultCallBack(completionStage, filters, update));
+        collection.updateMany(filters, update,updateOptions,getUpdateManyResultCallBack(completionStage, filters, update,updateOptions));
         return completionStage;
     }
 
-    public SingleResultCallback<UpdateResult> getUpdateManyResultCallBack(CompletionStage<T> completionStage,Bson filters,Bson update){
+    public SingleResultCallback<UpdateResult> getUpdateManyResultCallBack(CompletionStage<T> completionStage,Bson filters,Bson update,UpdateOptions updateOptions){
         SingleResultCallback<UpdateResult> singleResultCallback=new SingleResultCallback<UpdateResult>() {
             @Override
             public void onResult(UpdateResult result, Throwable throwable) {

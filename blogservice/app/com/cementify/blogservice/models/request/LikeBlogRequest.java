@@ -2,14 +2,17 @@ package com.cementify.blogservice.models.request;
 
 import org.bson.types.ObjectId;
 
+import java.util.List;
+
 /**
- * Created by roshan on 04/04/16.
+ * Created by roshan on 05/04/16.
  */
 public class LikeBlogRequest {
 
     private ObjectId blogId;
 
-    private Integer userId;
+    private List<Integer> userIds;
+
 
     public ObjectId getBlogId() {
         return blogId;
@@ -19,11 +22,11 @@ public class LikeBlogRequest {
         this.blogId = blogId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public List<Integer> getUserIds() {
+        return userIds;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUserIds(List<Integer> userIds) {
+        this.userIds = userIds;
     }
 }

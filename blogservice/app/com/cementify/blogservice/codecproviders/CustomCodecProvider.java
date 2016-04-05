@@ -33,6 +33,10 @@ public class CustomCodecProvider implements CodecProvider {
             return (Codec<T>) new ImageObjectCodec(registry);
         }else if(clazz== VideoObject.class) {
             return (Codec<T>) new VideoObjectCodec(registry);
+        }else if(clazz== UserAction.class) {
+            return (Codec<T>) new UserActionCodec(registry);
+        }else if(clazz== BlogAction.class) {
+            return (Codec<T>) new BlogActionCodec(registry);
         }
         return  null;
     }
