@@ -2,9 +2,10 @@ package com.cementify.userservice.models.mapping;
 
 import com.cementify.userservice.models.Customer;
 import com.cementify.userservice.models.CustomerDevice;
+import com.cementify.userservice.models.CustomerData;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.response.CustomerResponse;
-import com.cementify.userservice.models.response.CustomerResponseWithDescription;
+import com.cementify.userservice.models.response.CustomerResponseData;
 import com.cementify.userservice.models.response.CustomerResponseWithSocialAccount;
 
 import java.util.ArrayList;
@@ -23,31 +24,59 @@ public class CustomerMapping {
 
     }
 
-    public static List<CustomerResponseWithDescription> getCustomerResponseWithDescriptionList(List<Customer> customers)
+    public static List<CustomerResponse> getCustomerResponseList(List<Customer> customers)
     {
-        List<CustomerResponseWithDescription> customersResponseWithDescription =new ArrayList<>();
+        List<CustomerResponse> customersResponse =new ArrayList<>();
         if(customers == null)
               return null;
-        return getCustomerResponseWithDescriptionList(customers, customersResponseWithDescription);
+        return getCustomerResponseList(customers, customersResponse);
 
     }
 
-    public static List<CustomerResponseWithDescription> getCustomerResponseWithDescriptionList(
-            List<Customer> customers,List<CustomerResponseWithDescription> customersResponseWithDescription)
+    public static List<CustomerResponse> getCustomerResponseList(
+            List<Customer> customers,List<CustomerResponse> customersResponse)
     {
         if(customers ==null){
-            return customersResponseWithDescription;
+            return customersResponse;
         }
         for(Customer customer :customers){
-            CustomerResponseWithDescription customerResponseWithDescription =new CustomerResponseWithDescription();
-            customerResponseWithDescription.setCustomerId(customer.getCustomerId());
-            customerResponseWithDescription.setEmail(customer.getEmail());
-            customerResponseWithDescription.setIsVerified(customer.getIsVerified());
-            customerResponseWithDescription.setBirthday(customer.getBirthday());
-            customersResponseWithDescription.add(customerResponseWithDescription);
+            CustomerResponse customerResponse =new CustomerResponse();
+            customerResponse.setCustomerId(customer.getCustomerId());
+            customerResponse.setEmail(customer.getEmail());
+            customerResponse.setIsVerified(customer.getIsVerified());
+            customersResponse.add(customerResponse);
         }
-        return customersResponseWithDescription;
+        return customersResponse;
     }
+
+    public static List<CustomerResponseData> getCustomerDataResponseList(List<CustomerData> customersData)
+    {
+        List<CustomerResponseData> customerResponseData =new ArrayList<>();
+        if(customersData == null)
+            return null;
+        return getCustomerDataResponseList(customersData, customerResponseData);
+
+    }
+
+    public static List<CustomerResponseData> getCustomerDataResponseList(
+            List<CustomerData> customersData,List<CustomerResponseData> customersResponseData)
+    {
+        if(customersData ==null){
+            return customersResponseData;
+        }
+        for(CustomerData customerData :customersData){
+            CustomerResponseData customerResponseData =new CustomerResponseData();
+            customerResponseData.setCustomerId(customerData.getCustomerId());
+            customerResponseData.setAboutUser(customerData.getAboutUser());
+            customerResponseData.setBirthday(customerData.getBirthday());
+            customerResponseData.setAge(customerData.getAge());
+            customerResponseData.setIsMale(customerData.getIsMale());
+            customerResponseData.setProfilePic(customerData.getProfilePic());
+            customersResponseData.add(customerResponseData);
+        }
+        return customersResponseData;
+    }
+
 
     public static CustomerResponse getCustomerResponse(Customer customer,CustomerResponse customerResponse)
     {

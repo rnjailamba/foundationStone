@@ -32,4 +32,5 @@ POST          /userService/addCustomerEmailList                   com.cementify.
 POST          /userService/resetPassword                          com.cementify.userservice.controllers.CustomerController.resetPassword()
 POST          /userService/createCustomer                         com.cementify.userservice.controllers.CustomerController.createCustomer()
 POST          /userService/findCustomerByIds                      com.cementify.userservice.controllers.CustomerController.findCustomerByCustomerIds()
+POST          /userService/findCustomerDataByIds                  com.cementify.userservice.controllers.CustomerController.findCustomerDataByCustomerIds()
 

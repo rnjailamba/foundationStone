@@ -3,8 +3,10 @@ package com.cementify.blogservice.controllers;
 
 import com.cementify.blogservice.models.*;
 import com.cementify.blogservice.models.mapping.BlogMapping;
+import com.cementify.blogservice.models.mapping.CommentCollectionMapping;
 import com.cementify.blogservice.models.request.*;
 import com.cementify.blogservice.models.response.BlogResponse;
+import com.cementify.blogservice.models.response.CommentCollectionResponse;
 import com.cementify.blogservice.utils.MongoClientInstance;
 import com.cementify.blogservice.utils.MongoHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,12 +61,13 @@ public class BlogController extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public CompletionStage<Result> createBlog(){
-        Form<Blog> blogForm = formFactory.form(Blog.class);
-        blogForm=blogForm.bindFromRequest();
-        if (blogForm.hasErrors()) {
+        Form<CreateBlogRequest> createBlogRequestForm = formFactory.form(CreateBlogRequest.class);
+        createBlogRequestForm = createBlogRequestForm.bindFromRequest();
+        if (createBlogRequestForm.hasErrors()) {
             return CompletableFuture.supplyAsync(() -> status(400, "Bad request"));
         }
-        Blog blog=blogForm.get();
+        CreateBlogRequest createBlogRequest = createBlogRequestForm.get();
+        Blog blog = BlogMapping.getBlogFromBlogCreateRequest(createBlogRequest);
         MongoCollection<Blog> collection=
                 mongoClientInstance.getMongoClient().getDatabase("blog_post_database").getCollection("blog_collection",Blog.class);
         MongoHandler<Blog> mongoHandler=new MongoHandler<>();
@@ -83,7 +86,7 @@ public class BlogController extends Controller {
             }
         }).thenApply(blogs -> {
             if(blogs!=null)
-                return status(200, "Post Successfully Created");
+                return status(200, "BlogPost Successfully Created");
             else
                 return status(400, "Bad request");
         });
@@ -598,15 +601,8 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(response -> {
-            CommentCollection commentCollectionResponse = (CommentCollection) response;
-            List<Comment> responseComments = new ArrayList<Comment>();
-            List<Comment> comments =commentCollectionResponse.getComments();
-            for(Comment comment : comments){
-               if(comment.getSoftDelete() != null && comment.getSoftDelete())
-                   continue;
-               responseComments.add(comment);
-            }
-            commentCollectionResponse.setComments(responseComments);
+            CommentCollection commentCollectionResult = (CommentCollection) response;
+            CommentCollectionResponse commentCollectionResponse =CommentCollectionMapping.getCommentResponseFromCommentCollection(commentCollectionResult);
             if(commentCollectionResponse != null)
                 return ok(Json.toJson(commentCollectionResponse));
             else
@@ -750,7 +746,7 @@ public class BlogController extends Controller {
             if(userActionRequest.getAction().equals("like")){
                 completionStage = userActionMongoHandler.updateOneDocuments(userActionMongoCollection,
                         eq("user_id", userActionRequest.getUserId()),
-                        new Document("$pull", new Document("blog_likes", new Document("$each",new Document("blog_id",userActionRequest.getBlogIds())))),updateOptions);
+                        new Document("$pull", new Document("blog_likes", new Document("blog_id",new Document("$in",userActionRequest.getBlogIds())))),updateOptions);
             }else if(userActionRequest.getAction().equals("addToBookMark")){
                 completionStage = userActionMongoHandler.updateOneDocuments(userActionMongoCollection,
                         eq("user_id", userActionRequest.getUserId()),

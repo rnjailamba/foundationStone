@@ -6,12 +6,11 @@ import com.cementify.userservice.exceptions.InvalidStateException;
 import com.cementify.userservice.exceptions.NotAuthenticatedException;
 import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.mapping.CustomerMapping;
-import com.cementify.userservice.models.request.CustomerDataRequest;
+import com.cementify.userservice.models.request.CustomerDeviceRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import play.db.jpa.JPA;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +23,12 @@ public class CustomerServiceImp implements CustomerService {
 
 
     @Override
-    public CustomerDevice resetPassword(CustomerDataRequest customerRequest) {
+    public CustomerDevice resetPassword(CustomerDeviceRequest customerRequest) {
         return createAccount(customerRequest);
     }
 
     @Override
-    public Customer createCustomer(CustomerDataRequest customerRequest) throws EntityConflictException {
+    public Customer createCustomer(CustomerDeviceRequest customerRequest) throws EntityConflictException {
         Customer customer=findByMobile(customerRequest.getMobile());
         if(customer==null){
             sendWelcomeMail(customerRequest);
@@ -45,7 +44,7 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
-    public CustomerDevice createAccount(CustomerDataRequest customerRequest) {
+    public CustomerDevice createAccount(CustomerDeviceRequest customerRequest) {
         Customer customer = createCustomer(customerRequest);
         UUID ruid = UUID.randomUUID();
         CustomerDevice customerDevice = new CustomerDevice();
@@ -59,7 +58,7 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
-    public CustomerDevice createRuid(CustomerDataRequest customerRequest) {
+    public CustomerDevice createRuid(CustomerDeviceRequest customerRequest) {
         Customer customer = findByMobile(customerRequest.getMobile());
         if (customer == null) {
             throw new EntityNotFoundException("Customer with "
@@ -83,7 +82,7 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
-    public Customer update(CustomerDataRequest customerRequest) {
+    public Customer update(CustomerDeviceRequest customerRequest) {
         Customer toUpdate = findCustomerByCustomerId(customerRequest.getCustomerId());
         if (toUpdate == null) {
             throw new EntityNotFoundException("Customer with id "
@@ -92,11 +91,9 @@ public class CustomerServiceImp implements CustomerService {
         toUpdate.setEmail(customerRequest.getEmail());
         toUpdate.setFbEmail(customerRequest.getFbEmail());
         toUpdate.setFbId(customerRequest.getFbId());
-        toUpdate.setBirthday(customerRequest.getBirthDay());
         toUpdate.setGoogleEmail(customerRequest.getGoogleEmail());
         toUpdate.setGoogleId(customerRequest.getGoogleId());
         toUpdate.setUserName(customerRequest.getFirstName());
-        toUpdate.setIsMale(customerRequest.getIsMale());
         toUpdate.setIsVerified(customerRequest.getIsVerified());
         toUpdate.setIsCodBlocked(customerRequest.getIsCodBlocked());
         toUpdate.setIsPrepaidBlocked(customerRequest.getIsPrepaidBlocked());
@@ -249,6 +246,23 @@ public class CustomerServiceImp implements CustomerService {
             customerList.add(customer);
         }
         return customerList;
+    }
+
+    @Override
+    public List<CustomerData> findCustomerDataByCustomerIds(List<Integer> customerIds){
+        Query query = JPA.em().createQuery("select c from CustomerData c where c.customerId in (:customerIds)");
+        query.setParameter("customerIds", customerIds);
+        List resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer with "
+                    + customerIds + " not found.");
+        }
+        List<CustomerData> customerDataList =new ArrayList<>();
+        for(int i=0;i<resultList.size();i++){
+            CustomerData customerData = (CustomerData) resultList.get(i);
+            customerDataList.add(customerData);
+        }
+        return customerDataList;
     }
 
     @Override

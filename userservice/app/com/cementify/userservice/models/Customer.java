@@ -74,9 +74,6 @@ public class Customer {
     @Column(name = "is_prepaid_blocked")
     private Boolean isPrepaidBlocked;
 
-    @Column(name = "is_male")
-    private Boolean isMale;
-
     @Column(name = "is_verified")
     private Boolean isVerified;
 
@@ -87,10 +84,6 @@ public class Customer {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified_date",insertable = false)
     private Date modifiedDate;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "birthday")
-    private Date birthday;
 
 
     public void setCustomerId(Integer customerId) {
@@ -146,13 +139,6 @@ public class Customer {
         this.isVerified = isVerified;
     }
 
-    public void setIsMale(Boolean isMale) {
-        this.isMale = isMale;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
 
     public Integer getCustomerId() {
         return customerId;
@@ -206,16 +192,9 @@ public class Customer {
         return isPrepaidBlocked;
     }
 
-    public Boolean getIsMale() {
-        return isMale;
-    }
 
     public Boolean getIsVerified() {
         return isVerified;
-    }
-
-    public Date getBirthday() {
-        return birthday;
     }
 
     public String getSalt() {

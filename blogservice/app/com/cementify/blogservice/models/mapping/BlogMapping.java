@@ -1,9 +1,12 @@
 package com.cementify.blogservice.models.mapping;
 
 import com.cementify.blogservice.models.Blog;
+import com.cementify.blogservice.models.request.CreateBlogRequest;
 import com.cementify.blogservice.models.response.BlogResponse;
 
+
 import java.text.SimpleDateFormat;
+
 
 /**
  * Created by roshan on 26/03/16.
@@ -34,4 +37,27 @@ public class BlogMapping {
          blogResponse.setSubCategoryId(blog.getSubCategoryId());
          return blogResponse;
     }
+
+    public static Blog getBlogFromBlogCreateRequest(CreateBlogRequest createBlogRequest){
+        if(createBlogRequest == null)
+            return null;
+        Blog blog = new Blog();
+        return getBlogFromBlogCreateRequest(createBlogRequest,blog);
+    }
+
+    public static Blog getBlogFromBlogCreateRequest(CreateBlogRequest createBlogRequest,Blog blog){
+        blog.setPostedBy(createBlogRequest.getPostedBy());
+        blog.setCategoryId(createBlogRequest.getCategoryId());
+        blog.setLikeUserList(createBlogRequest.getLikeUserList());
+        blog.setNoOfView(createBlogRequest.getNoOfView());
+        blog.setParagraphs(createBlogRequest.getParagraphs());
+        blog.setSubCategoryId(createBlogRequest.getSubCategoryId());
+        blog.setTitle(createBlogRequest.getTitle());
+        blog.setTags(createBlogRequest.getTags());
+        return blog;
+    }
+
+
+
+
 }

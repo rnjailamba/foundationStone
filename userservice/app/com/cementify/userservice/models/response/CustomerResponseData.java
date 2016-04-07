@@ -1,11 +1,11 @@
-package com.cementify.userservice.models.request;
+package com.cementify.userservice.models.response;
 
 import java.util.Date;
 
 /**
- * Created by roshan on 08/04/16.
+ * Created by roshan on 26/03/16.
  */
-public class CustomerDataRequest {
+public class CustomerResponseData {
 
     private Integer customerId;
 

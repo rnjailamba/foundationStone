@@ -1,6 +1,5 @@
 package com.cementify.userservice.controllers;
 
-import com.cementify.userservice.exceptions.EntityConflictException;
 import com.cementify.userservice.exceptions.EntityNotFoundException;
 import com.cementify.userservice.exceptions.InvalidRequestException;
 import com.cementify.userservice.exceptions.NotAuthenticatedException;
@@ -8,7 +7,7 @@ import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.mapping.CustomerMapping;
 import com.cementify.userservice.models.request.*;
 import com.cementify.userservice.models.response.CustomerResponse;
-import com.cementify.userservice.models.response.CustomerResponseWithDescription;
+import com.cementify.userservice.models.response.CustomerResponseData;
 import com.cementify.userservice.services.CustomerService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
@@ -20,11 +19,7 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by roshan on 31/01/16.
@@ -73,8 +68,8 @@ public class CustomerController extends Controller {
 		if (customers == null) {
 			return notFound();
 		}
-		List<CustomerResponseWithDescription> customersResponse = CustomerMapping
-				.getCustomerResponseWithDescriptionList(customers);
+		List<CustomerResponse> customersResponse = CustomerMapping
+				.getCustomerResponseList(customers);
 		return ok(Json.toJson(customersResponse));
 	}
 
@@ -125,14 +120,14 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
     @BodyParser.Of(BodyParser.Json.class)
     public Result create() {
-		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
-		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
-		if (customerDataRequestForm.hasErrors()) {
+		Form<CustomerDeviceRequest> customerDeviceRequestForm = formFactory.form(CustomerDeviceRequest.class);
+		customerDeviceRequestForm=customerDeviceRequestForm.bindFromRequest();
+		if (customerDeviceRequestForm.hasErrors()) {
 			return status(400, "Bad request");
 		}
-        CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
+        CustomerDeviceRequest customerDeviceRequest =customerDeviceRequestForm.get();
         try {
-            CustomerDevice customerDevice = customerService.createAccount(customerDataRequest);
+            CustomerDevice customerDevice = customerService.createAccount(customerDeviceRequest);
             CustomerResponse customerResponse = CustomerMapping
                     .getCustomerResponseFromCustomerDevice(customerDevice);
             return ok(Json.toJson(customerResponse));
@@ -144,14 +139,14 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result createCustomer() {
-		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		Form<CustomerDeviceRequest> customerDataRequestForm = formFactory.form(CustomerDeviceRequest.class);
 		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
 		if (customerDataRequestForm.hasErrors()) {
 			return status(400, "Bad request");
 		}
-		CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
+		CustomerDeviceRequest customerDeviceRequest =customerDataRequestForm.get();
 		try {
-			Customer customer = customerService.createCustomer(customerDataRequest);
+			Customer customer = customerService.createCustomer(customerDeviceRequest);
 			CustomerResponse customerResponse = CustomerMapping
 					.getCustomerResponse(customer);
 			return ok(Json.toJson(customerResponse));
@@ -163,14 +158,14 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result resetPassword() {
-		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		Form<CustomerDeviceRequest> customerDataRequestForm = formFactory.form(CustomerDeviceRequest.class);
 		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
 		if (customerDataRequestForm.hasErrors()) {
 			return status(400, "Bad request");
 		}
-		CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
+		CustomerDeviceRequest customerDeviceRequest =customerDataRequestForm.get();
 		try {
-			CustomerDevice customerDevice = customerService.resetPassword(customerDataRequest);
+			CustomerDevice customerDevice = customerService.resetPassword(customerDeviceRequest);
 			CustomerResponse customerResponse = CustomerMapping
 					.getCustomerResponseFromCustomerDevice(customerDevice);
 			return ok(Json.toJson(customerResponse));
@@ -182,14 +177,14 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result login() {
-		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		Form<CustomerDeviceRequest> customerDataRequestForm = formFactory.form(CustomerDeviceRequest.class);
 		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
 		if (customerDataRequestForm.hasErrors()) {
 			return status(400, "Bad request");
 		}
-		CustomerDataRequest customerDataRequest=customerDataRequestForm.get();
+		CustomerDeviceRequest customerDeviceRequest =customerDataRequestForm.get();
 		try {
-			CustomerDevice customerDevice = customerService.createRuid(customerDataRequest);
+			CustomerDevice customerDevice = customerService.createRuid(customerDeviceRequest);
 			CustomerResponse customerResponse = CustomerMapping
 					.getCustomerResponseFromCustomerDevice(customerDevice);
 			return ok(Json.toJson(customerResponse));
@@ -264,14 +259,14 @@ public class CustomerController extends Controller {
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
 	public Result updateCustomerData() {
-		Form<CustomerDataRequest> customerDataUpdateRequestForm = formFactory.form(CustomerDataRequest.class);
+		Form<CustomerDeviceRequest> customerDataUpdateRequestForm = formFactory.form(CustomerDeviceRequest.class);
 		customerDataUpdateRequestForm=customerDataUpdateRequestForm.bindFromRequest();
 		if (customerDataUpdateRequestForm.hasErrors()) {
 			return status(400, "Bad Request");
 		}
-		CustomerDataRequest customerDataRequest =customerDataUpdateRequestForm.get();
+		CustomerDeviceRequest customerDeviceRequest =customerDataUpdateRequestForm.get();
 		try {
-			Customer customer=customerService.update(customerDataRequest);
+			Customer customer=customerService.update(customerDeviceRequest);
 			CustomerResponse customerResponse = CustomerMapping
 					.getCustomerResponse(customer);
 			return ok(Json.toJson(customerResponse));
@@ -574,5 +569,38 @@ public class CustomerController extends Controller {
 
 	}
 
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result findCustomerDataByCustomerIds() {
+		JsonNode jsonNode=request().body().asJson();
+		CustomerFindRequestByIds customerFindRequestByIds =Json.fromJson(jsonNode,CustomerFindRequestByIds.class);
+		List<Integer> customerIds = customerFindRequestByIds.getCustomerIds();
+		List<CustomerData> customersData = customerService.findCustomerDataByCustomerIds(customerIds);
+		if (customersData == null) {
+			return notFound();
+		}
+		List<CustomerResponseData> customersResponseData = CustomerMapping
+				.getCustomerDataResponseList(customersData);
+		return ok(Json.toJson(customersResponseData));
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result addCustomerData() {
+		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
+		if (customerDataRequestForm.hasErrors()) {
+			return status(400, "Bad request");
+		}
+		CustomerDataRequest customerDataRequest =customerDataRequestForm.get();
+		try {
+			CustomerDevice customerDevice = customerService.addCustomerData(customerDataRequest);
+			CustomerResponse customerResponse = CustomerMapping
+					.getCustomerResponseFromCustomerDevice(customerDevice);
+			return ok(Json.toJson(customerResponse));
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad request");
+		}
+	}
 
 }
