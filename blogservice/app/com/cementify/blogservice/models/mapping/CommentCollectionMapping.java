@@ -29,7 +29,7 @@ public class CommentCollectionMapping {
         if(commentCollection.getComments() !=null){
             for(Comment comment :commentCollection.getComments()){
                 CommentResponse commentResponse = new CommentResponse();
-                if(comment.getSoftDelete()){
+                if(comment.getSoftDelete()!=null && comment.getSoftDelete()){
                     commentResponse.setCommentContent(null);
                 }else {
                     commentResponse.setCommentContent(comment.getCommentContent());
