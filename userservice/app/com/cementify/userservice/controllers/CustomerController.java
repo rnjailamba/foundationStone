@@ -594,9 +594,9 @@ public class CustomerController extends Controller {
 		}
 		CustomerDataRequest customerDataRequest =customerDataRequestForm.get();
 		try {
-			CustomerDevice customerDevice = customerService.addCustomerData(customerDataRequest);
-			CustomerResponse customerResponse = CustomerMapping
-					.getCustomerResponseFromCustomerDevice(customerDevice);
+			//CustomerDevice customerDevice = customerService.(customerDataRequest);
+			CustomerResponse customerResponse = null;//CustomerMapping
+					//.getCustomerResponseFromCustomerDevice(customerDevice);
 			return ok(Json.toJson(customerResponse));
 		} catch (InvalidRequestException e) {
 			return status(400, "Bad request");
