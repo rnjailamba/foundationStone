@@ -1,6 +1,7 @@
 package com.cementify.blogservice.models.request;
 
 import org.bson.types.ObjectId;
+import play.data.validation.Constraints;
 
 import java.util.List;
 
@@ -9,10 +10,13 @@ import java.util.List;
  */
 public class UserActionRequest {
 
+    @Constraints.Required
     private Integer userId;
 
+    @Constraints.Required
     private List<ObjectId> blogIds;
 
+    @Constraints.Required
     private String action;
 
     public Integer getUserId() {
