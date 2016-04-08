@@ -16,7 +16,7 @@ POST          /userService/updateGoogleId                         com.cementify.
 POST          /userService/setVerified                            com.cementify.userservice.controllers.CustomerController.setVerified()
 POST          /userService/logout                                 com.cementify.userservice.controllers.CustomerController.logout()
 GET           /userService/findCustomerByRuid                     com.cementify.userservice.controllers.CustomerController.findCustomerByRuid(ruid: String)
-POST          /userService/updateCustomerData                     com.cementify.userservice.controllers.CustomerController.updateCustomerData()
+POST          /userService/updateCustomerDeviceData               com.cementify.userservice.controllers.CustomerController.updateCustomerDeviceData()
 GET           /userService/getCustomerContacts                    com.cementify.userservice.controllers.CustomerController.getCustomerContacts(customerId: Integer)
 GET           /userService/getCustomerLocations                   com.cementify.userservice.controllers.CustomerController.getCustomerLocations(customerId: Integer)
 GET           /userService/getCustomerEmails                      com.cementify.userservice.controllers.CustomerController.getCustomerEmails(customerId: Integer)
@@ -33,4 +33,7 @@ POST          /userService/resetPassword                          com.cementify.
 POST          /userService/createCustomer                         com.cementify.userservice.controllers.CustomerController.createCustomer()
 POST          /userService/findCustomerByIds                      com.cementify.userservice.controllers.CustomerController.findCustomerByCustomerIds()
 POST          /userService/findCustomerDataByIds                  com.cementify.userservice.controllers.CustomerController.findCustomerDataByCustomerIds()
-
+POST          /userService/findCustomerDataByCustomerIds          com.cementify.userservice.controllers.CustomerController.findCustomerDataByCustomerIds()
+POST          /userService/addCustomerData                        com.cementify.userservice.controllers.CustomerController.addCustomerData()
+POST          /userService/updateCustomerData                     com.cementify.userservice.controllers.CustomerController.updateCustomerData()
+GET           /userService/findCustomerDataByCustomerId           com.cementify.userservice.controllers.CustomerController.findCustomerDataByCustomerId(customer: Integer)

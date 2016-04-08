@@ -14,7 +14,6 @@ public class BlogResponse {
 
     private Integer customerId;
 
-    private String email;
 
     private String birthday;
 
@@ -22,6 +21,13 @@ public class BlogResponse {
 
     private String categoryId;
 
+    private Integer age;
+
+    private String aboutUser;
+
+    private String profilePic;
+
+    private Boolean isMale;
 
     private List<String> tags;
 
@@ -125,13 +131,6 @@ public class BlogResponse {
         this.customerId = customerId;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getBirthday() {
         return birthday;
@@ -155,5 +154,37 @@ public class BlogResponse {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getAboutUser() {
+        return aboutUser;
+    }
+
+    public void setAboutUser(String aboutUser) {
+        this.aboutUser = aboutUser;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public Boolean getIsMale() {
+        return isMale;
+    }
+
+    public void setIsMale(Boolean isMale) {
+        this.isMale = isMale;
     }
 }

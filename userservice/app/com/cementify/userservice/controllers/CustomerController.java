@@ -258,7 +258,7 @@ public class CustomerController extends Controller {
 
 	@Transactional(value = "customerdb")
 	@BodyParser.Of(BodyParser.Json.class)
-	public Result updateCustomerData() {
+	public Result updateCustomerDeviceData() {
 		Form<CustomerDeviceRequest> customerDataUpdateRequestForm = formFactory.form(CustomerDeviceRequest.class);
 		customerDataUpdateRequestForm=customerDataUpdateRequestForm.bindFromRequest();
 		if (customerDataUpdateRequestForm.hasErrors()) {
@@ -594,13 +594,42 @@ public class CustomerController extends Controller {
 		}
 		CustomerDataRequest customerDataRequest =customerDataRequestForm.get();
 		try {
-			//CustomerDevice customerDevice = customerService.(customerDataRequest);
-			CustomerResponse customerResponse = null;//CustomerMapping
-					//.getCustomerResponseFromCustomerDevice(customerDevice);
-			return ok(Json.toJson(customerResponse));
+			customerService.addCustomerData(customerDataRequest);
+			return ok("Customer Data Sucessfully addded");
 		} catch (InvalidRequestException e) {
 			return status(400, "Bad request");
 		}
 	}
 
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result updateCustomerData() {
+		Form<CustomerDataRequest> customerDataRequestForm = formFactory.form(CustomerDataRequest.class);
+		customerDataRequestForm=customerDataRequestForm.bindFromRequest();
+		if (customerDataRequestForm.hasErrors()) {
+			return status(400, "Bad request");
+		}
+		CustomerDataRequest customerDataRequest =customerDataRequestForm.get();
+		try {
+			customerService.updateCustomerData(customerDataRequest);
+			return ok("Customer Data Sucessfully updated");
+		} catch (InvalidRequestException e) {
+			return status(400, "Bad request");
+		}
+	}
+
+	@Transactional(value = "customerdb")
+	@BodyParser.Of(BodyParser.Json.class)
+	public Result findCustomerDataByCustomerId(Integer customerId) {
+		if(customerId == null){
+			return status(400, "Bad request");
+		}
+		CustomerData customerData = customerService.findCustomerDataByCustomerId(customerId);
+		if (customerData == null) {
+			return notFound();
+		}
+		CustomerResponseData customersResponseData = CustomerMapping
+				.getCustomerDataResponse(customerData);
+		return ok(Json.toJson(customersResponseData));
+	}
 }

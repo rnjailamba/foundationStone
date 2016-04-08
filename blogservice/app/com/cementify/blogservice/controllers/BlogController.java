@@ -75,14 +75,27 @@ public class BlogController extends Controller {
             Date date=new Date();
             blog.setModifiedDate(date);
             blog.setCreatedDate(date);
+            String userServiceUrl = configuration.getString("userServiceUrl");
             if(blog.getNoOfCommentsCollections() == null)
                  blog.setNoOfCommentsCollections(0);
             CompletionStage<?> completionStage=mongoHandler.insertOneDocuments(collection,blog);
-            try{
-                return ((CompletableFuture)completionStage).get();
-            }catch (Exception e){
-                Logger.error("Exception raised during storing Blogs to MongoDb "+e);
-                return null;
+            if(createBlogRequest.getUserAboutus() !=null && (!createBlogRequest.getUserAboutus().isEmpty())){
+                JsonNode postData = Json.newObject().put("aboutUser", createBlogRequest.getUserAboutus());
+                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
+                        setHeader("Content-Type", "application/json").post(postData);
+                try {
+                    return CompletableFuture.allOf((CompletableFuture) completionStage, (CompletableFuture) responsePromise);
+                }catch (Exception e){
+                    Logger.error("Exception raised during storing Blogs to MongoDb and updating customerData to customer service "+e);
+                    return null;
+                }
+            }else{
+                try{
+                    return ((CompletableFuture)completionStage).get();
+                }catch (Exception e){
+                    Logger.error("Exception raised during storing Blogs to MongoDb "+e);
+                    return null;
+                }
             }
         }).thenApply(blogs -> {
             if(blogs!=null)
@@ -126,7 +139,7 @@ public class BlogController extends Controller {
                     i++;
                 }
                 JsonNode postData = Json.newObject().set("customerIds",Json.toJson(customerIds));
-                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "findCustomerByIds").
+                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "findCustomerDataByCustomerIds").
                         setHeader("Content-Type", "application/json").post(postData);
                 try {
                     return ((CompletableFuture)responsePromise.thenApply(WSResponse::asJson)).get();
@@ -148,10 +161,16 @@ public class BlogController extends Controller {
                 Integer customerId = jsonNode1.get("customerId").asInt();
                 Integer position = customerIdPositionMapping.get(customerId);
                 BlogResponse blogResponse = blogResponses.get(position);
-                if (jsonNode1.get("email") != null)
-                    blogResponse.setEmail(jsonNode1.get("email").asText());
+                if (jsonNode1.get("age") != null)
+                    blogResponse.setAge(jsonNode1.get("age").asInt());
                 if (jsonNode1.get("birthday") != null)
                     blogResponse.setBirthday(jsonNode1.get("birthday").asText());
+                if (jsonNode1.get("aboutUser") != null)
+                    blogResponse.setAboutUser(jsonNode1.get("aboutUser").asText());
+                if (jsonNode1.get("profilePic") != null)
+                    blogResponse.setProfilePic(jsonNode1.get("profilePic").asText());
+                if (jsonNode1.get("isMale") != null)
+                    blogResponse.setIsMale(jsonNode1.get("isMale").asBoolean());
             }
             return ok(Json.toJson(blogResponses));
         });
@@ -175,14 +194,27 @@ public class BlogController extends Controller {
             Date date=new Date();
             newBlogData.setModifiedDate(date);
             UpdateOptions updateOptions =new UpdateOptions();
-            updateOptions.upsert(false);
+            updateOptions.upsert(true);
+            String userServiceUrl = configuration.getString("userServiceUrl");
             CompletionStage<?> completionStage=mongoHandler.updateOneDocuments(
                     collection,oldBlogCondition,new Document("$set", newBlogData),updateOptions);
-            try{
-                return ((CompletableFuture)completionStage).get();
-            }catch (Exception e){
-                Logger.error("Exception raised during updating Blogs to MongoDb "+e);
-                return null;
+            if(updateBlogRequest.getUserAboutus() !=null && (!updateBlogRequest.getUserAboutus().isEmpty())){
+                JsonNode postData = Json.newObject().put("aboutUser", updateBlogRequest.getUserAboutus());
+                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
+                        setHeader("Content-Type", "application/json").post(postData);
+                try {
+                    return CompletableFuture.allOf((CompletableFuture) completionStage, (CompletableFuture) responsePromise);
+                }catch (Exception e){
+                    Logger.error("Exception raised during updating Blogs to MongoDb and updating customerData to customer service "+e);
+                    return null;
+                }
+            }else{
+                try{
+                    return ((CompletableFuture)completionStage).get();
+                }catch (Exception e){
+                    Logger.error("Exception raised during updating Blogs to MongoDb "+e);
+                    return null;
+                }
             }
         }).thenApply(blogs -> {
             if(blogs!=null)
@@ -210,14 +242,27 @@ public class BlogController extends Controller {
             Date date=new Date();
             newBlogData.setModifiedDate(date);
             UpdateOptions updateOptions =new UpdateOptions();
-            updateOptions.upsert(false);
+            updateOptions.upsert(true);
+            String userServiceUrl = configuration.getString("userServiceUrl");
             CompletionStage<?> completionStage = mongoHandler.updateManyDocuments(
                     collection, oldBlogCondition, new Document("$set", newBlogData),updateOptions);
-            try{
-                return ((CompletableFuture)completionStage).get();
-            }catch (Exception e){
-                Logger.error("Exception raised during updating Blogs to MongoDb "+e);
-                return null;
+            if(updateBlogRequest.getUserAboutus() !=null && (!updateBlogRequest.getUserAboutus().isEmpty())){
+                JsonNode postData = Json.newObject().put("aboutUser", updateBlogRequest.getUserAboutus());
+                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
+                        setHeader("Content-Type", "application/json").post(postData);
+                try {
+                    return CompletableFuture.allOf((CompletableFuture) completionStage, (CompletableFuture) responsePromise);
+                }catch (Exception e){
+                    Logger.error("Exception raised during updating Blogs to MongoDb and updating customerData to customer service "+e);
+                    return null;
+                }
+            }else{
+                try{
+                    return ((CompletableFuture)completionStage).get();
+                }catch (Exception e){
+                    Logger.error("Exception raised during updating Blogs to MongoDb "+e);
+                    return null;
+                }
             }
         }).thenApply(blogs -> {
             if(blogs!=null)
@@ -639,7 +684,12 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(result -> {
-            return status(200,"Liked Blog");
+            if(result ==null){
+                return status(400, "Bad request");
+            }else{
+                return status(200,"Liked Blog");
+            }
+
         });
 
     }
@@ -670,7 +720,11 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(result -> {
-            return status(200,"UnLiked Blog");
+            if(result ==null){
+                return status(400, "Bad request");
+            }else {
+                return status(200, "UnLiked Blog");
+            }
         });
 
     }
@@ -714,7 +768,12 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(result -> {
-            return status(200, "Liked Blog");
+            if(result ==null){
+                return status(400, "Bad request");
+            }else{
+                return status(200, "Sucessfully Added User Action");
+            }
+
         });
 
     }
@@ -734,13 +793,6 @@ public class BlogController extends Controller {
                         getCollection("user_action_collection", UserAction.class);
         return CompletableFuture.supplyAsync(() ->{
             CompletionStage<?> completionStage =null;
-            List<BlogAction> blogActions =new ArrayList<BlogAction>();
-            for(ObjectId blogId : userActionRequest.getBlogIds()){
-                BlogAction blogAction = new BlogAction();
-                //blogAction.setModifiedDate(new Date());
-                blogAction.setBlogId(blogId);
-                blogActions.add(blogAction);
-            }
             UpdateOptions updateOptions =new UpdateOptions();
             updateOptions.upsert(true);
             if(userActionRequest.getAction().equals("like")){
@@ -759,7 +811,12 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(result -> {
-            return status(200, "Liked Blog");
+            if(result ==null){
+                return status(400, "Bad request");
+            }else{
+                return status(200, "Sucessfully Removed User Action");
+            }
+
         });
 
     }

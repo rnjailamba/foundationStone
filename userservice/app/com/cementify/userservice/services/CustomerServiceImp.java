@@ -6,6 +6,7 @@ import com.cementify.userservice.exceptions.InvalidStateException;
 import com.cementify.userservice.exceptions.NotAuthenticatedException;
 import com.cementify.userservice.models.*;
 import com.cementify.userservice.models.mapping.CustomerMapping;
+import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerDeviceRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
@@ -379,5 +380,36 @@ public class CustomerServiceImp implements CustomerService {
         JPA.em().persist(customerLocation);
     }
 
+    @Override
+    public void addCustomerData(CustomerDataRequest customerDataRequest){
+        JPA.em().persist(customerDataRequest);
+    }
+
+    @Override
+    public void updateCustomerData(CustomerDataRequest customerDataRequest){
+        CustomerData customerData =findCustomerDataByCustomerId(customerDataRequest.getCustomerId());
+        customerData.setAboutUser(customerDataRequest.getAboutUser());
+        customerData.setAge(customerDataRequest.getAge());
+        customerData.setBirthday(customerDataRequest.getBirthday());
+        customerData.setIsMale(customerDataRequest.getIsMale());
+        customerData.setProfilePic(customerDataRequest.getProfilePic());
+        JPA.em().persist(customerDataRequest);
+    }
+
+    @Override
+    public CustomerData findCustomerDataByCustomerId(Integer customerId){
+        Query query = JPA.em().createQuery("select c from CustomerData c where c.customerId =:customerId");
+        query.setParameter("customerId", customerId);
+        List resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            throw new EntityNotFoundException("Customer with "
+                    + customerId + " not found.");
+        }
+        if (resultList.size() != 1) {
+            throw new InvalidStateException("Found more than one user");
+        }
+        CustomerData customerData = (CustomerData) resultList.get(0);
+        return customerData ;
+    }
 
 }

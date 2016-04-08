@@ -142,4 +142,30 @@ public class CustomerMapping {
         customer.setPassword(customerRequest.getPassword());
         return customer;
     }
+
+
+    public static CustomerResponseData getCustomerDataResponse(CustomerData customersData)
+    {
+        CustomerResponseData customerResponseData =new CustomerResponseData();
+        if(customersData == null)
+            return null;
+        return getCustomerDataResponse(customersData, customerResponseData);
+
+    }
+
+    public static CustomerResponseData getCustomerDataResponse(
+            CustomerData customerData,CustomerResponseData customerResponseData)
+    {
+        if(customerData ==null){
+            return customerResponseData;
+        }
+            customerResponseData.setCustomerId(customerData.getCustomerId());
+            customerResponseData.setAboutUser(customerData.getAboutUser());
+            customerResponseData.setBirthday(customerData.getBirthday());
+            customerResponseData.setAge(customerData.getAge());
+            customerResponseData.setIsMale(customerData.getIsMale());
+            customerResponseData.setProfilePic(customerData.getProfilePic());
+
+        return customerResponseData;
+    }
 }

@@ -1,6 +1,7 @@
 package com.cementify.blogservice.models.request;
 
 import org.bson.types.ObjectId;
+import play.data.validation.Constraints;
 
 import java.util.List;
 
@@ -9,8 +10,10 @@ import java.util.List;
  */
 public class LikeBlogRequest {
 
+    @Constraints.Required
     private ObjectId blogId;
 
+    @Constraints.Required
     private List<Integer> userIds;
 
 

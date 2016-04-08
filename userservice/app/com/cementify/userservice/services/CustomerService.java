@@ -1,6 +1,7 @@
 package com.cementify.userservice.services;
 
 import com.cementify.userservice.models.*;
+import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerDeviceRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
@@ -39,4 +40,7 @@ public interface CustomerService {
     void addLocation(CustomerLocation customerLocation);
     void addContact(CustomerContact customerContact);
     List<CustomerData> findCustomerDataByCustomerIds(List<Integer> customerIds);
+    void addCustomerData(CustomerDataRequest customerDataRequest);
+    void updateCustomerData(CustomerDataRequest customerDataRequest);
+    CustomerData findCustomerDataByCustomerId(Integer customerId);
 }
