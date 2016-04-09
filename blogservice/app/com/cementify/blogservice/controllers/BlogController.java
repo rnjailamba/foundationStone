@@ -370,7 +370,13 @@ public class BlogController extends Controller {
                 }
             }
         }).thenApply(result -> {
-            return status(200, "Comment Added Sucessfully");
+            if(result != null){
+                JsonNode postData = Json.newObject().put("statusMessage","Comment Added Sucessfully").put("commmentId",commentRequest.getComment().getCommentId().toString());
+                return ok(postData);
+            }else{
+                return status(400, "Bad request");
+            }
+
         });
     }
 
@@ -467,7 +473,12 @@ public class BlogController extends Controller {
                 }
             }
         }).thenApply(result -> {
-            return status(200, "Comment Added Sucessfully");
+            if(result != null){
+                JsonNode postData = Json.newObject().put("statusMessage","Comment Added Sucessfully").put("commmentId",commentRequest.getComment().getCommentId().toString());
+                return ok(postData);
+            }else{
+                return status(400, "Bad request");
+            }
         });
 
     }
@@ -502,7 +513,11 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(result -> {
-            return status(200,"Liked Comment");
+            if(result!=null)
+                return status(200,"Liked Comment");
+            else
+                return status(400, "Bad request");
+
         });
 
     }
@@ -534,7 +549,11 @@ public class BlogController extends Controller {
                 return null;
             }
         }).thenApply(result -> {
-            return status(200,"Unliked Comment");
+            if(result!=null)
+                return status(200,"Unliked Comment");
+            else
+                return status(400, "Bad request");
+
         });
 
     }
