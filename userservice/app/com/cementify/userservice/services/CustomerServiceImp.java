@@ -183,7 +183,7 @@ public class CustomerServiceImp implements CustomerService {
     private Customer executeQuery(Query query) {
         List resultList = query.getResultList();
 
-        if (resultList.isEmpty()) {
+        if (resultList ==null || resultList.isEmpty()) {
             return null;
         }
         if (resultList.size() != 1) {
@@ -252,7 +252,8 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public List<CustomerResponseData> findCustomerDataByCustomerIds(List<Integer> customerIds){
-        Query query = JPA.em().createQuery("select new com.cementify.userservice.models.response.CustomerResponseData(c.customerId,cd.birthday,cd.age,cd.aboutUser,cd.profilePic,cd.isMale,c.userName)" +
+        Query query = JPA.em().createQuery("select new com.cementify.userservice.models.response.CustomerResponseData(" +
+                "c.customerId,cd.birthday,cd.age,cd.aboutUser,cd.profilePic,cd.isMale,c.userName)" +
                 " from CustomerData cd join Customer c where  c.customerId =cd.customerId" +
                 " AND c.customerId in (:customerIds)");
         query.setParameter("customerIds", customerIds);
@@ -302,7 +303,7 @@ public class CustomerServiceImp implements CustomerService {
         query.setParameter("customerId", customerId);
         List resultList = query.getResultList();
 
-        if (resultList.isEmpty()) {
+        if (resultList ==null ||resultList.isEmpty()) {
             throw new EntityNotFoundException("Customer Location with "
                     + customerId + " not found.");
         }
@@ -323,7 +324,7 @@ public class CustomerServiceImp implements CustomerService {
         query.setParameter("customerId", customerId);
         List resultList = query.getResultList();
 
-        if (resultList.isEmpty()) {
+        if (resultList ==null ||resultList.isEmpty()) {
             throw new EntityNotFoundException("Customer contacts with "
                     + customerId + " not found.");
         }
@@ -344,7 +345,7 @@ public class CustomerServiceImp implements CustomerService {
         query.setParameter("customerId", customerId);
         List resultList = query.getResultList();
 
-        if (resultList.isEmpty()) {
+        if (resultList ==null ||resultList.isEmpty()) {
             throw new EntityNotFoundException("Customer emails with "
                     + customerId + " not found.");
         }
@@ -412,7 +413,7 @@ public class CustomerServiceImp implements CustomerService {
         Query query = JPA.em().createQuery("select c from CustomerData c where c.customerId =:customerId");
         query.setParameter("customerId", customerId);
         List resultList = query.getResultList();
-        if (resultList.isEmpty()) {
+        if (resultList ==null ||resultList.isEmpty()) {
             throw new EntityNotFoundException("Customer with "
                     + customerId + " not found.");
         }
