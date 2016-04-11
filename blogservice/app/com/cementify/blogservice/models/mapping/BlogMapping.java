@@ -35,6 +35,8 @@ public class BlogMapping {
          blogResponse.setTags(blog.getTags());
          blogResponse.setTitle(blog.getTitle());
          blogResponse.setSubCategoryId(blog.getSubCategoryId());
+         blogResponse.setApprovedBy(blog.getApprovedBy());
+         blogResponse.setBlogType(blog.getBlogType());
          return blogResponse;
     }
 
@@ -54,6 +56,8 @@ public class BlogMapping {
         blog.setSubCategoryId(createBlogRequest.getSubCategoryId());
         blog.setTitle(createBlogRequest.getTitle());
         blog.setTags(createBlogRequest.getTags());
+        blog.setApprovedBy(createBlogRequest.getApprovedBy());
+        blog.setBlogType(createBlogRequest.getBlogType());
         return blog;
     }
 

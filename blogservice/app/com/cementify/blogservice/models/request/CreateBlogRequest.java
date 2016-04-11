@@ -27,6 +27,10 @@ public class CreateBlogRequest {
 
     private List<String> tags;
 
+    @Constraints.Required
+    private String blogType;
+
+    private Integer approvedBy;
 
     private Integer noOfView;
 
@@ -38,6 +42,10 @@ public class CreateBlogRequest {
 
     private String userAboutus;
 
+    private Integer totalNoOfComment;
+
+
+    private String name;
 
     public Integer getPostedBy() {
         return postedBy;
@@ -109,5 +117,37 @@ public class CreateBlogRequest {
 
     public void setUserAboutus(String userAboutus) {
         this.userAboutus = userAboutus;
+    }
+
+    public String getBlogType() {
+        return blogType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBlogType(String blogType) {
+        this.blogType = blogType;
+    }
+
+    public Integer getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Integer approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Integer getTotalNoOfComment() {
+        return totalNoOfComment;
+    }
+
+    public void setTotalNoOfComment(Integer totalNoOfComment) {
+        this.totalNoOfComment = totalNoOfComment;
     }
 }

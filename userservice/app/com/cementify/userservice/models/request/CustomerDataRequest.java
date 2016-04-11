@@ -19,6 +19,8 @@ public class CustomerDataRequest {
 
     private Boolean isMale;
 
+    private String userName;
+
     public Date getBirthday() {
         return birthday;
     }
@@ -66,5 +68,13 @@ public class CustomerDataRequest {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

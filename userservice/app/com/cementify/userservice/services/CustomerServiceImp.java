@@ -10,6 +10,7 @@ import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerDeviceRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
+import com.cementify.userservice.models.response.CustomerResponseData;
 import play.db.jpa.JPA;
 
 import javax.persistence.Query;
@@ -250,20 +251,17 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
-    public List<CustomerData> findCustomerDataByCustomerIds(List<Integer> customerIds){
-        Query query = JPA.em().createQuery("select c from CustomerData c where c.customerId in (:customerIds)");
+    public List<CustomerResponseData> findCustomerDataByCustomerIds(List<Integer> customerIds){
+        Query query = JPA.em().createQuery("select new com.cementify.userservice.models.response.CustomerResponseData(c.customerId,cd.birthday,cd.age,cd.aboutUser,cd.profilePic,cd.isMale,c.userName)" +
+                " from CustomerData cd join Customer c where  c.customerId =cd.customerId" +
+                " AND c.customerId in (:customerIds)");
         query.setParameter("customerIds", customerIds);
-        List resultList = query.getResultList();
-        if (resultList.isEmpty()) {
+        List<CustomerResponseData> resultList = (List<CustomerResponseData>)query.getResultList();
+        if (resultList ==null || resultList.isEmpty()) {
             throw new EntityNotFoundException("Customer with "
                     + customerIds + " not found.");
         }
-        List<CustomerData> customerDataList =new ArrayList<>();
-        for(int i=0;i<resultList.size();i++){
-            CustomerData customerData = (CustomerData) resultList.get(i);
-            customerDataList.add(customerData);
-        }
-        return customerDataList;
+        return resultList;
     }
 
     @Override
@@ -283,7 +281,7 @@ public class CustomerServiceImp implements CustomerService {
         query.setParameter("customerId", customerId);
         List resultList = query.getResultList();
 
-        if (resultList.isEmpty()) {
+        if (resultList ==null || resultList.isEmpty()) {
             throw new EntityNotFoundException("Customer Address with "
                     + customerId + " not found.");
         }
@@ -383,6 +381,13 @@ public class CustomerServiceImp implements CustomerService {
     @Override
     public void addCustomerData(CustomerDataRequest customerDataRequest){
         JPA.em().persist(customerDataRequest);
+        if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
+            Customer customer =new Customer();
+            customer.setCustomerId(customerDataRequest.getCustomerId());
+            customer.setUserName(customerDataRequest.getUserName());
+            JPA.em().persist(customer);
+        }
+
     }
 
     @Override
@@ -394,6 +399,12 @@ public class CustomerServiceImp implements CustomerService {
         customerData.setIsMale(customerDataRequest.getIsMale());
         customerData.setProfilePic(customerDataRequest.getProfilePic());
         JPA.em().persist(customerDataRequest);
+        if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
+            Customer customer =new Customer();
+            customer.setCustomerId(customerDataRequest.getCustomerId());
+            customer.setUserName(customerDataRequest.getUserName());
+            JPA.em().persist(customer);
+        }
     }
 
     @Override

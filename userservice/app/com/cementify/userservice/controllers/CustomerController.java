@@ -575,13 +575,11 @@ public class CustomerController extends Controller {
 		JsonNode jsonNode=request().body().asJson();
 		CustomerFindRequestByIds customerFindRequestByIds =Json.fromJson(jsonNode,CustomerFindRequestByIds.class);
 		List<Integer> customerIds = customerFindRequestByIds.getCustomerIds();
-		List<CustomerData> customersData = customerService.findCustomerDataByCustomerIds(customerIds);
+		List<CustomerResponseData> customersData = customerService.findCustomerDataByCustomerIds(customerIds);
 		if (customersData == null) {
 			return notFound();
 		}
-		List<CustomerResponseData> customersResponseData = CustomerMapping
-				.getCustomerDataResponseList(customersData);
-		return ok(Json.toJson(customersResponseData));
+		return ok(Json.toJson(customersData));
 	}
 
 	@Transactional(value = "customerdb")

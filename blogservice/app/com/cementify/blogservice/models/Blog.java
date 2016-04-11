@@ -58,6 +58,14 @@ public class Blog implements Bson {
     @FieldName(value = "no_of_comments_collection")
     private Integer noOfCommentsCollections;
 
+    @FieldName(value = "blog_type")
+    private String blogType;
+
+    @FieldName(value = "approved_by")
+    private Integer approvedBy;
+
+    @FieldName(value = "total_no_of_comment")
+    private Integer totalNoOfComment;
 
     public ObjectId generateId() {
         if (this.blogId == null) {
@@ -169,6 +177,31 @@ public class Blog implements Bson {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+
+    public String getBlogType() {
+        return blogType;
+    }
+
+    public void setBlogType(String blogType) {
+        this.blogType = blogType;
+    }
+
+    public Integer getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Integer approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Integer getTotalNoOfComment() {
+        return totalNoOfComment;
+    }
+
+    public void setTotalNoOfComment(Integer totalNoOfComment) {
+        this.totalNoOfComment = totalNoOfComment;
     }
 
     @Override

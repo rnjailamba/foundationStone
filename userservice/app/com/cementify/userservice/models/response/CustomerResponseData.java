@@ -19,6 +19,33 @@ public class CustomerResponseData {
 
     private Boolean isMale;
 
+    private String userName;
+
+
+    public  CustomerResponseData(){
+
+    }
+
+    public  CustomerResponseData(Integer customerId ,Date birthday,Integer age,String aboutUser,
+                                 String profilePic,Boolean isMale,String userName){
+        this.customerId=customerId;
+        this.birthday=birthday;
+        this.age=age;
+        this.aboutUser=aboutUser;
+        this.profilePic=profilePic;
+        this.isMale=isMale;
+        this.userName=userName;
+
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public Date getBirthday() {
         return birthday;
     }

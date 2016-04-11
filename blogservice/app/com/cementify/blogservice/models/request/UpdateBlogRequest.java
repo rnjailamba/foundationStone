@@ -16,6 +16,16 @@ public class UpdateBlogRequest {
 
     private String userAboutus;
 
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Blog getOldBlogCondition() {
         return oldBlogCondition;
     }

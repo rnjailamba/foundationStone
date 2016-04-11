@@ -10,6 +10,7 @@ import com.cementify.blogservice.models.response.CommentCollectionResponse;
 import com.cementify.blogservice.utils.MongoClientInstance;
 import com.cementify.blogservice.utils.MongoHandler;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.model.Projections;
@@ -79,8 +80,16 @@ public class BlogController extends Controller {
             if(blog.getNoOfCommentsCollections() == null)
                  blog.setNoOfCommentsCollections(0);
             CompletionStage<?> completionStage=mongoHandler.insertOneDocuments(collection,blog);
-            if(createBlogRequest.getUserAboutus() !=null && (!createBlogRequest.getUserAboutus().isEmpty())){
-                JsonNode postData = Json.newObject().put("aboutUser", createBlogRequest.getUserAboutus());
+            if(createBlogRequest.getUserAboutus() !=null && (!createBlogRequest.getUserAboutus().isEmpty()) ||
+                    createBlogRequest.getName() !=null && (!createBlogRequest.getName().isEmpty())){
+                ObjectNode objectNode = Json.newObject();
+                if(createBlogRequest.getUserAboutus() !=null) {
+                    objectNode.put("aboutUser", createBlogRequest.getUserAboutus());
+                }
+                if(createBlogRequest.getName() !=null){
+                    objectNode.put("userName",createBlogRequest.getName());
+                }
+                JsonNode postData = objectNode;
                 CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
                         setHeader("Content-Type", "application/json").post(postData);
                 try {
@@ -171,6 +180,8 @@ public class BlogController extends Controller {
                     blogResponse.setProfilePic(jsonNode1.get("profilePic").asText());
                 if (jsonNode1.get("isMale") != null)
                     blogResponse.setIsMale(jsonNode1.get("isMale").asBoolean());
+                if (jsonNode1.get("userName") != null)
+                    blogResponse.setName(jsonNode1.get("userName").asText());
             }
             return ok(Json.toJson(blogResponses));
         });
@@ -198,8 +209,16 @@ public class BlogController extends Controller {
             String userServiceUrl = configuration.getString("userServiceUrl");
             CompletionStage<?> completionStage=mongoHandler.updateOneDocuments(
                     collection,oldBlogCondition,new Document("$set", newBlogData),updateOptions);
-            if(updateBlogRequest.getUserAboutus() !=null && (!updateBlogRequest.getUserAboutus().isEmpty())){
-                JsonNode postData = Json.newObject().put("aboutUser", updateBlogRequest.getUserAboutus());
+            if(updateBlogRequest.getUserAboutus() !=null && (!updateBlogRequest.getUserAboutus().isEmpty()) ||
+                    updateBlogRequest.getName() !=null && (!updateBlogRequest.getName().isEmpty())){
+                ObjectNode objectNode = Json.newObject();
+                if(updateBlogRequest.getUserAboutus() !=null) {
+                    objectNode.put("aboutUser", updateBlogRequest.getUserAboutus());
+                }
+                if(updateBlogRequest.getName() !=null){
+                    objectNode.put("userName",updateBlogRequest.getName());
+                }
+                JsonNode postData = objectNode;
                 CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
                         setHeader("Content-Type", "application/json").post(postData);
                 try {
@@ -217,7 +236,7 @@ public class BlogController extends Controller {
                 }
             }
         }).thenApply(blogs -> {
-            if(blogs!=null)
+            if (blogs != null)
                 return status(200, "Post Successfully updated");
             else
                 return status(400, "Bad request");

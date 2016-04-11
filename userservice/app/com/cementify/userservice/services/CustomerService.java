@@ -5,6 +5,7 @@ import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerDeviceRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
+import com.cementify.userservice.models.response.CustomerResponseData;
 import com.google.inject.ImplementedBy;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public interface CustomerService {
     void addAddress(CustomerAddress customerAddress);
     void addLocation(CustomerLocation customerLocation);
     void addContact(CustomerContact customerContact);
-    List<CustomerData> findCustomerDataByCustomerIds(List<Integer> customerIds);
+    List<CustomerResponseData>  findCustomerDataByCustomerIds(List<Integer> customerIds);
     void addCustomerData(CustomerDataRequest customerDataRequest);
     void updateCustomerData(CustomerDataRequest customerDataRequest);
     CustomerData findCustomerDataByCustomerId(Integer customerId);

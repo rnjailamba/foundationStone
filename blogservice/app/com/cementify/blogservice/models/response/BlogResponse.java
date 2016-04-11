@@ -1,6 +1,7 @@
 package com.cementify.blogservice.models.response;
 
 import com.cementify.blogservice.models.Paragraph;
+import play.data.validation.Constraints;
 
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,8 @@ public class BlogResponse {
 
     private Integer noOfView;
 
+    private String name;
+
 
     private List<Integer> likeUserList;
 
@@ -49,6 +52,12 @@ public class BlogResponse {
 
 
     private Integer noOfCommentsCollections;
+
+    private String blogType;
+
+    private Integer approvedBy;
+
+    private Integer totalNoOfComment;
 
     public List<Paragraph> getParagraphs() {
         return paragraphs;
@@ -186,5 +195,37 @@ public class BlogResponse {
 
     public void setIsMale(Boolean isMale) {
         this.isMale = isMale;
+    }
+
+    public String getBlogType() {
+        return blogType;
+    }
+
+    public void setBlogType(String blogType) {
+        this.blogType = blogType;
+    }
+
+    public Integer getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Integer approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Integer getTotalNoOfComment() {
+        return totalNoOfComment;
+    }
+
+    public void setTotalNoOfComment(Integer totalNoOfComment) {
+        this.totalNoOfComment = totalNoOfComment;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
