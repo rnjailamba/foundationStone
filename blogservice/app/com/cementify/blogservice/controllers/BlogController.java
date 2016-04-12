@@ -91,7 +91,7 @@ public class BlogController extends Controller {
                     objectNode.put("userName",createBlogRequest.getName());
                 }
                 JsonNode postData = objectNode;
-                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
+                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "updateCustomerData").
                         setHeader("Content-Type", "application/json").post(postData);
                 try {
                     return CompletableFuture.allOf((CompletableFuture) completionStage, (CompletableFuture) responsePromise);
@@ -221,7 +221,7 @@ public class BlogController extends Controller {
                     objectNode.put("userName",updateBlogRequest.getName());
                 }
                 JsonNode postData = objectNode;
-                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "addCustomerData").
+                CompletionStage<WSResponse> responsePromise = ws.url(userServiceUrl + "updateCustomerData").
                         setHeader("Content-Type", "application/json").post(postData);
                 try {
                     return CompletableFuture.allOf((CompletableFuture) completionStage, (CompletableFuture) responsePromise);

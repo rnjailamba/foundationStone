@@ -16,6 +16,7 @@ import play.db.jpa.JPA;
 
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -255,7 +256,7 @@ public class CustomerServiceImp implements CustomerService {
     public List<CustomerResponseData> findCustomerDataByCustomerIds(List<Integer> customerIds){
         Query query = JPA.em().createQuery("select new com.cementify.userservice.models.response.CustomerResponseData(" +
                 "cd.customerId,cd.birthday,cd.age,cd.aboutUser,cd.profilePic,cd.isMale,c.userName)" +
-                " from CustomerData cd , Customer c where  c.customerId =cd.customerId" +
+                " from CustomerData cd,Customer c where  c.customerId =cd.customerId" +
                 " AND c.customerId in (:customerIds)");
         query.setParameter("customerIds", customerIds);
         List<CustomerResponseData> resultList = (List<CustomerResponseData>)query.getResultList();
@@ -380,29 +381,39 @@ public class CustomerServiceImp implements CustomerService {
         JPA.em().persist(customerLocation);
     }
 
+
+
     @Override
     public void addCustomerData(CustomerDataRequest customerDataRequest){
-        CustomerData customerData = CustomerMapping.getCustomerDataFromCustomerDataRequest(customerDataRequest);
-        JPA.em().persist(customerData);
-        if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
-            Customer customer =new Customer();
-            customer.setCustomerId(customerDataRequest.getCustomerId());
-            customer.setUserName(customerDataRequest.getUserName());
-            JPA.em().merge(customer);
-        }
-
+            CustomerData customerData = CustomerMapping.getCustomerDataFromCustomerDataRequest(customerDataRequest);
+            JPA.em().persist(customerData);
 
     }
 
     @Override
     public void updateCustomerData(CustomerDataRequest customerDataRequest){
-        CustomerData customerData = findCustomerDataByCustomerId(customerDataRequest.getCustomerId());
-        customerData.setAboutUser(customerDataRequest.getAboutUser());
-        customerData.setAge(customerDataRequest.getAge());
-        customerData.setBirthday(customerDataRequest.getBirthday());
-        customerData.setIsMale(customerDataRequest.getIsMale());
-        customerData.setProfilePic(customerDataRequest.getProfilePic());
-        JPA.em().merge(customerDataRequest);
+        CustomerData customerDataFetched = findCustomerDataByCustomerId(customerDataRequest.getCustomerId());
+        if(customerDataFetched == null){
+            CustomerData customerData = CustomerMapping.getCustomerDataFromCustomerDataRequest(customerDataRequest);
+            JPA.em().persist(customerData);
+        }else {
+            if(customerDataRequest.getAboutUser()!= null){
+                customerDataFetched.setAboutUser(customerDataRequest.getAboutUser());
+            }
+            if (customerDataRequest.getAge() !=null){
+                customerDataFetched.setAge(customerDataRequest.getAge());
+            }
+            if(customerDataRequest.getIsMale() !=null){
+                customerDataFetched.setIsMale(customerDataRequest.getIsMale());
+            }
+            if(customerDataRequest.getBirthday() !=null){
+                customerDataFetched.setBirthday(customerDataRequest.getBirthday());
+            }
+            if(customerDataRequest.getProfilePic() !=null){
+                customerDataFetched.setProfilePic(customerDataRequest.getProfilePic());
+            }
+            customerDataFetched.setModifiedDate(new Date());
+        }
         if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
             Customer customer =new Customer();
             customer.setCustomerId(customerDataRequest.getCustomerId());
@@ -418,8 +429,7 @@ public class CustomerServiceImp implements CustomerService {
         query.setParameter("customerId", customerId);
         List resultList = query.getResultList();
         if (resultList ==null ||resultList.isEmpty()) {
-            throw new EntityNotFoundException("Customer with "
-                    + customerId + " not found.");
+           return null;
         }
         if (resultList.size() != 1) {
             throw new InvalidStateException("Found more than one user");
