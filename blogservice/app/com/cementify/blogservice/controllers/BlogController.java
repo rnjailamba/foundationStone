@@ -83,6 +83,7 @@ public class BlogController extends Controller {
             if(createBlogRequest.getUserAboutus() !=null && (!createBlogRequest.getUserAboutus().isEmpty()) ||
                     createBlogRequest.getName() !=null && (!createBlogRequest.getName().isEmpty())){
                 ObjectNode objectNode = Json.newObject();
+                objectNode.put("customerId",createBlogRequest.getPostedBy());
                 if(createBlogRequest.getUserAboutus() !=null) {
                     objectNode.put("aboutUser", createBlogRequest.getUserAboutus());
                 }
@@ -212,6 +213,7 @@ public class BlogController extends Controller {
             if(updateBlogRequest.getUserAboutus() !=null && (!updateBlogRequest.getUserAboutus().isEmpty()) ||
                     updateBlogRequest.getName() !=null && (!updateBlogRequest.getName().isEmpty())){
                 ObjectNode objectNode = Json.newObject();
+                objectNode.put("customerId",updateBlogRequest.getCustomerId());
                 if(updateBlogRequest.getUserAboutus() !=null) {
                     objectNode.put("aboutUser", updateBlogRequest.getUserAboutus());
                 }

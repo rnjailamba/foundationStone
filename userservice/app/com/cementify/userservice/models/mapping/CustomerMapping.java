@@ -3,6 +3,7 @@ package com.cementify.userservice.models.mapping;
 import com.cementify.userservice.models.Customer;
 import com.cementify.userservice.models.CustomerDevice;
 import com.cementify.userservice.models.CustomerData;
+import com.cementify.userservice.models.request.CustomerDataRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.response.CustomerResponse;
 import com.cementify.userservice.models.response.CustomerResponseData;
@@ -167,5 +168,29 @@ public class CustomerMapping {
             customerResponseData.setProfilePic(customerData.getProfilePic());
 
         return customerResponseData;
+    }
+
+
+    public static CustomerData getCustomerDataFromCustomerDataRequest(CustomerDataRequest customerDataRequest)
+    {
+        if(customerDataRequest == null)
+            return null;
+        CustomerData customerData = new CustomerData();
+        return getCustomerDataFromCustomerDataRequest(customerDataRequest, customerData);
+
+    }
+
+    public static CustomerData getCustomerDataFromCustomerDataRequest(CustomerDataRequest customerDataRequest,CustomerData customerData)
+    {
+        if(customerData ==null){
+            return null;
+        }
+        customerData.setAboutUser(customerDataRequest.getAboutUser());
+        customerData.setAge(customerDataRequest.getAge());
+        customerData.setBirthday(customerDataRequest.getBirthday());
+        customerData.setCustomerId(customerDataRequest.getCustomerId());
+        customerData.setIsMale(customerDataRequest.getIsMale());
+        customerData.setProfilePic(customerDataRequest.getProfilePic());
+        return customerData;
     }
 }

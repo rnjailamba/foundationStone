@@ -26,6 +26,27 @@ public class UpdateBlogRequest {
         this.name = name;
     }
 
+    private Integer customerId;
+
+    private String coverImage;
+
+
+    public String getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
     public Blog getOldBlogCondition() {
         return oldBlogCondition;
     }

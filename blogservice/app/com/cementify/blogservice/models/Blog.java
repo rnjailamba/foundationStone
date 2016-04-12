@@ -67,6 +67,9 @@ public class Blog implements Bson {
     @FieldName(value = "total_no_of_comment")
     private Integer totalNoOfComment;
 
+    @FieldName(value = "cover_image_url")
+    private String coverImageUrl;
+
     public ObjectId generateId() {
         if (this.blogId == null) {
             blogId = new ObjectId();
@@ -74,6 +77,13 @@ public class Blog implements Bson {
         return blogId;
     }
 
+    public String getCoverImageUrl() {
+        return coverImageUrl;
+    }
+
+    public void setCoverImageUrl(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
+    }
 
     public ObjectId getBlogId() {
         return blogId;

@@ -45,7 +45,28 @@ public class CreateBlogRequest {
     private Integer totalNoOfComment;
 
 
+
+    private String coverImage;
+
+    public String getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private String name;
+
+
 
     public Integer getPostedBy() {
         return postedBy;
@@ -123,13 +144,6 @@ public class CreateBlogRequest {
         return blogType;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public void setBlogType(String blogType) {
         this.blogType = blogType;

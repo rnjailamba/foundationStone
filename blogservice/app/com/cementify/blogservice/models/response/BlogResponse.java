@@ -59,6 +59,16 @@ public class BlogResponse {
 
     private Integer totalNoOfComment;
 
+    private String coverImageUrl;
+
+    public String getCoverImageUrl() {
+        return coverImageUrl;
+    }
+
+    public void setCoverImageUrl(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
+    }
+
     public List<Paragraph> getParagraphs() {
         return paragraphs;
     }

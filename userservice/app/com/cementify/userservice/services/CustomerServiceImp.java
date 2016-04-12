@@ -11,6 +11,7 @@ import com.cementify.userservice.models.request.CustomerDeviceRequest;
 import com.cementify.userservice.models.request.CustomerRequest;
 import com.cementify.userservice.models.request.CustomerResetPasswordRequest;
 import com.cementify.userservice.models.response.CustomerResponseData;
+import play.Logger;
 import play.db.jpa.JPA;
 
 import javax.persistence.Query;
@@ -381,31 +382,34 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public void addCustomerData(CustomerDataRequest customerDataRequest){
-        JPA.em().persist(customerDataRequest);
+        CustomerData customerData = CustomerMapping.getCustomerDataFromCustomerDataRequest(customerDataRequest);
+        JPA.em().persist(customerData);
         if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
             Customer customer =new Customer();
             customer.setCustomerId(customerDataRequest.getCustomerId());
             customer.setUserName(customerDataRequest.getUserName());
-            JPA.em().persist(customer);
+            JPA.em().merge(customer);
         }
+
 
     }
 
     @Override
     public void updateCustomerData(CustomerDataRequest customerDataRequest){
-        CustomerData customerData =findCustomerDataByCustomerId(customerDataRequest.getCustomerId());
+        CustomerData customerData = findCustomerDataByCustomerId(customerDataRequest.getCustomerId());
         customerData.setAboutUser(customerDataRequest.getAboutUser());
         customerData.setAge(customerDataRequest.getAge());
         customerData.setBirthday(customerDataRequest.getBirthday());
         customerData.setIsMale(customerDataRequest.getIsMale());
         customerData.setProfilePic(customerDataRequest.getProfilePic());
-        JPA.em().persist(customerDataRequest);
+        JPA.em().merge(customerDataRequest);
         if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
             Customer customer =new Customer();
             customer.setCustomerId(customerDataRequest.getCustomerId());
             customer.setUserName(customerDataRequest.getUserName());
-            JPA.em().persist(customer);
+            JPA.em().merge(customer);
         }
+
     }
 
     @Override
