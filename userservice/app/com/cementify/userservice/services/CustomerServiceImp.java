@@ -254,8 +254,8 @@ public class CustomerServiceImp implements CustomerService {
     @Override
     public List<CustomerResponseData> findCustomerDataByCustomerIds(List<Integer> customerIds){
         Query query = JPA.em().createQuery("select new com.cementify.userservice.models.response.CustomerResponseData(" +
-                "c.customerId,cd.birthday,cd.age,cd.aboutUser,cd.profilePic,cd.isMale,c.userName)" +
-                " from CustomerData cd join Customer c where  c.customerId =cd.customerId" +
+                "cd.customerId,cd.birthday,cd.age,cd.aboutUser,cd.profilePic,cd.isMale,c.userName)" +
+                " from CustomerData cd , Customer c where  c.customerId =cd.customerId" +
                 " AND c.customerId in (:customerIds)");
         query.setParameter("customerIds", customerIds);
         List<CustomerResponseData> resultList = (List<CustomerResponseData>)query.getResultList();
