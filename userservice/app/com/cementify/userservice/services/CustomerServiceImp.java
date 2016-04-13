@@ -415,10 +415,9 @@ public class CustomerServiceImp implements CustomerService {
             customerDataFetched.setModifiedDate(new Date());
         }
         if(customerDataRequest.getUserName() !=null && (!customerDataRequest.getUserName().isEmpty())){
-            Customer customer =new Customer();
-            customer.setCustomerId(customerDataRequest.getCustomerId());
+            Customer customer=findCustomerByCustomerId(customerDataRequest.getCustomerId());
             customer.setUserName(customerDataRequest.getUserName());
-            JPA.em().merge(customer);
+          
         }
 
     }
